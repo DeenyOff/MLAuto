@@ -15,6 +15,7 @@ type Props = {
     title: string;
     price: number;
     carType: string;
+    description: string;
     image: string;
 };
 
@@ -23,6 +24,7 @@ export default function ServiceCard({
                                         title,
                                         price,
                                         carType,
+                                        description,
                                         image,
                                     }: Props) {
     return (
@@ -37,6 +39,7 @@ export default function ServiceCard({
                         title,
                         price,
                         carType,
+                        description,
                     },
                 })
             }

@@ -16,8 +16,7 @@ const COLORS = {
 };
 
 export default function ServiceDetails() {
-    const { id, title, price, carType } =
-        useLocalSearchParams();
+    const { id, title, price, carType, description } = useLocalSearchParams();
 
     return (
         <>
@@ -47,9 +46,7 @@ export default function ServiceDetails() {
                     </Text>
 
                     <Text style={styles.description}>
-                        Profesionali automobilio priežiūros
-                        paslauga atliekama naudojant aukštos
-                        kokybės priemones ir modernią įrangą.
+                        {description}
                     </Text>
 
                     <Text style={styles.price}>
@@ -113,7 +110,7 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: COLORS.accent,
         paddingVertical: 18,
-        borderRadius: 18,
+        borderRadius: 6,
         alignItems: "center",
     },
 

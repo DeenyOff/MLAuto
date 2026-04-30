@@ -18,6 +18,7 @@ type Service = {
     title: string;
     price: number;
     car_type: string;
+    description: string;
 };
 
 const serviceImages = [
@@ -68,6 +69,7 @@ export default function HomeScreen() {
                         id={item.id}
                         title={item.title}
                         price={item.price}
+                        description={item.description}
                         carType={item.car_type}
                         image={
                             serviceImages[
