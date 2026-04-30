@@ -17,7 +17,7 @@ export default function PromoBanner() {
 const styles = StyleSheet.create({
     banner: {
         backgroundColor: Colors.card,
-        borderRadius: 24,
+        borderRadius: 6,
         padding: 24,
         marginBottom: 30,
     },

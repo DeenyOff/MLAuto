@@ -74,7 +74,7 @@ export default function ServiceCard({
 const styles = StyleSheet.create({
     card: {
         backgroundColor: Colors.card,
-        borderRadius: 24,
+        borderRadius: 6,
         overflow: "hidden",
         marginBottom: 20,
     },
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.accent,
         paddingHorizontal: 18,
         paddingVertical: 10,
-        borderRadius: 14,
+        borderRadius: 6,
     },
 
     buttonText: {
