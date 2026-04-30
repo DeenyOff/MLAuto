@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import {
     View,
     Text,
@@ -20,40 +20,51 @@ export default function ServiceDetails() {
         useLocalSearchParams();
 
     return (
-        <View style={styles.container}>
-            <Image
-                source={{
-                    uri: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop",
-                }}
-                style={styles.image}
-            />
+        <>
+            <Stack.Screen options={{
+                title: String(title),
+                headerBackTitle: "Atgal",
+                headerStyle: {
+                    backgroundColor: COLORS.background,
+                },
+                headerTintColor: COLORS.text,
+            }}/>
+            <View style={styles.container}>
+                <Image
+                    source={{
+                        uri: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop",
+                    }}
+                    style={styles.image}
+                />
 
-            <View style={styles.content}>
-                <Text style={styles.title}>
-                    {title}
-                </Text>
-
-                <Text style={styles.carType}>
-                    {carType}
-                </Text>
-
-                <Text style={styles.description}>
-                    Profesionali automobilio priežiūros
-                    paslauga atliekama naudojant aukštos
-                    kokybės priemones ir modernią įrangą.
-                </Text>
-
-                <Text style={styles.price}>
-                    €{price}
-                </Text>
-
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>
-                        Rezervuoti
+                <View style={styles.content}>
+                    <Text style={styles.title}>
+                        {title}
                     </Text>
-                </TouchableOpacity>
+
+                    <Text style={styles.carType}>
+                        {carType}
+                    </Text>
+
+                    <Text style={styles.description}>
+                        Profesionali automobilio priežiūros
+                        paslauga atliekama naudojant aukštos
+                        kokybės priemones ir modernią įrangą.
+                    </Text>
+
+                    <Text style={styles.price}>
+                        €{price}
+                    </Text>
+
+                    <TouchableOpacity style={styles.button}>
+                        <Text style={styles.buttonText}>
+                            Rezervuoti
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </>
+
     );
 }
 
