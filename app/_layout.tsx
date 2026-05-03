@@ -7,14 +7,18 @@ import { Stack } from "expo-router";
 
 import { StatusBar } from "expo-status-bar";
 
+import { AuthProvider } from "@/contexts/auth";
+
 export default function RootLayout() {
     return (
         <ThemeProvider value={DarkTheme}>
-            <Stack
-                screenOptions={{
-                    headerShown: false,
-                }}
-            />
+            <AuthProvider>
+                <Stack
+                    screenOptions={{
+                        headerShown: false,
+                    }}
+                />
+            </AuthProvider>
 
             <StatusBar style="light" />
         </ThemeProvider>

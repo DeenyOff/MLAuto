@@ -1,12 +1,11 @@
-import {
-    View,
-    Text,
-    StyleSheet,
-    Image,
-    TouchableOpacity,
-} from "react-native";
-
 import { router } from "expo-router";
+import {
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 import { Colors } from "@/constants/theme";
 
@@ -20,13 +19,13 @@ type Props = {
 };
 
 export default function ServiceCard({
-                                        id,
-                                        title,
-                                        price,
-                                        carType,
-                                        description,
-                                        image,
-                                    }: Props) {
+    id,
+    title,
+    price,
+    carType,
+    description,
+    image,
+}: Props) {
     return (
         <TouchableOpacity
             style={styles.card}
@@ -44,29 +43,17 @@ export default function ServiceCard({
                 })
             }
         >
-            <Image
-                source={{ uri: image }}
-                style={styles.image}
-            />
+            <Image source={{ uri: image }} style={styles.image} />
 
             <View style={styles.content}>
-                <Text style={styles.title}>
-                    {title}
-                </Text>
-
-                <Text style={styles.carType}>
-                    {carType}
-                </Text>
+                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.carType}>{carType}</Text>
 
                 <View style={styles.bottomRow}>
-                    <Text style={styles.price}>
-                        €{price}
-                    </Text>
+                    <Text style={styles.price}>EUR {price}</Text>
 
                     <View style={styles.button}>
-                        <Text style={styles.buttonText}>
-                            Rezervuoti
-                        </Text>
+                        <Text style={styles.buttonText}>Rezervuoti</Text>
                     </View>
                 </View>
             </View>
@@ -81,47 +68,39 @@ const styles = StyleSheet.create({
         overflow: "hidden",
         marginBottom: 20,
     },
-
     image: {
         width: "100%",
         height: 190,
     },
-
     content: {
         padding: 18,
     },
-
     title: {
         color: Colors.text,
         fontSize: 22,
         fontWeight: "700",
         marginBottom: 8,
     },
-
     carType: {
         color: Colors.secondary,
         marginBottom: 18,
     },
-
     bottomRow: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
     },
-
     price: {
         color: Colors.accent,
         fontSize: 24,
         fontWeight: "700",
     },
-
     button: {
         backgroundColor: Colors.accent,
         paddingHorizontal: 18,
         paddingVertical: 10,
         borderRadius: 6,
     },
-
     buttonText: {
         color: "white",
         fontWeight: "600",

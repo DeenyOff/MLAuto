@@ -1,33 +1,31 @@
 import { Stack, useLocalSearchParams } from "expo-router";
 import {
-    View,
-    Text,
-    StyleSheet,
     Image,
+    StyleSheet,
+    Text,
     TouchableOpacity,
+    View,
 } from "react-native";
 
-const COLORS = {
-    background: "#0F0F0F",
-    card: "#1B1B1B",
-    accent: "#E9021E",
-    text: "#FFFFFF",
-    secondary: "#A0A0A0",
-};
+import { Colors } from "@/constants/theme";
 
 export default function ServiceDetails() {
-    const { id, title, price, carType, description } = useLocalSearchParams();
+    const { title, price, carType, description } = useLocalSearchParams();
 
     return (
         <>
-            <Stack.Screen options={{
-                title: String(title),
-                headerBackTitle: "Atgal",
-                headerStyle: {
-                    backgroundColor: COLORS.background,
-                },
-                headerTintColor: COLORS.text,
-            }}/>
+            <Stack.Screen
+                options={{
+                    title: String(title ?? "Paslauga"),
+                    headerShown: true,
+                    headerBackTitle: "Atgal",
+                    headerStyle: {
+                        backgroundColor: Colors.background,
+                    },
+                    headerTintColor: Colors.text,
+                }}
+            />
+
             <View style={styles.container}>
                 <Image
                     source={{
@@ -37,83 +35,61 @@ export default function ServiceDetails() {
                 />
 
                 <View style={styles.content}>
-                    <Text style={styles.title}>
-                        {title}
-                    </Text>
-
-                    <Text style={styles.carType}>
-                        {carType}
-                    </Text>
-
-                    <Text style={styles.description}>
-                        {description}
-                    </Text>
-
-                    <Text style={styles.price}>
-                        €{price}
-                    </Text>
+                    <Text style={styles.title}>{title}</Text>
+                    <Text style={styles.carType}>{carType}</Text>
+                    <Text style={styles.description}>{description}</Text>
+                    <Text style={styles.price}>EUR {price}</Text>
 
                     <TouchableOpacity style={styles.button}>
-                        <Text style={styles.buttonText}>
-                            Rezervuoti
-                        </Text>
+                        <Text style={styles.buttonText}>Rezervuoti</Text>
                     </TouchableOpacity>
                 </View>
             </View>
         </>
-
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: Colors.background,
     },
-
     image: {
         width: "100%",
         height: 300,
     },
-
     content: {
         padding: 24,
     },
-
     title: {
-        color: COLORS.text,
+        color: Colors.text,
         fontSize: 30,
         fontWeight: "700",
         marginBottom: 10,
     },
-
     carType: {
-        color: COLORS.secondary,
+        color: Colors.secondary,
         fontSize: 16,
         marginBottom: 20,
     },
-
     description: {
-        color: COLORS.secondary,
+        color: Colors.secondary,
         lineHeight: 24,
         fontSize: 16,
         marginBottom: 30,
     },
-
     price: {
-        color: COLORS.accent,
+        color: Colors.accent,
         fontSize: 34,
         fontWeight: "700",
         marginBottom: 30,
     },
-
     button: {
-        backgroundColor: COLORS.accent,
+        backgroundColor: Colors.accent,
         paddingVertical: 18,
         borderRadius: 6,
         alignItems: "center",
     },
-
     buttonText: {
         color: "white",
         fontSize: 18,

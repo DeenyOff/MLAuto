@@ -1,12 +1,23 @@
 import { Platform } from 'react-native';
 
-
-export const Colors = {
+const palette = {
   background: "#0F0F0F",
   card: "#1B1B1B",
   accent: "#E9021E",
   text: "#FFFFFF",
   secondary: "#A0A0A0",
+};
+
+export const Colors = {
+  ...palette,
+  light: {
+    ...palette,
+    icon: palette.secondary,
+  },
+  dark: {
+    ...palette,
+    icon: palette.secondary,
+  },
 };
 
 export const Fonts = Platform.select({
