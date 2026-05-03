@@ -3,15 +3,16 @@ import {
     View,
     Text,
     FlatList,
-    StyleSheet,
+    StyleSheet, TouchableOpacity,
 } from "react-native";
 
-import { supabase } from "../services/supabase";
+import { supabase } from "@/services/supabase";
 import { Colors } from "@/constants/theme";
 
 import HomeHeader from "../../components/HomeHeader";
 import PromoBanner from "../../components/PromoBanner";
 import ServiceCard from "../../components/ServiceCard";
+import {router} from "expo-router";
 
 type Service = {
     id: string;
@@ -52,6 +53,11 @@ export default function HomeScreen() {
             <HomeHeader />
 
             <PromoBanner />
+            <TouchableOpacity
+                onPress={() => router.push("/login")}
+            >
+                <Text>LOGIN</Text>
+            </TouchableOpacity>
 
             <Text style={styles.sectionTitle}>
                 Paslaugos
