@@ -37,23 +37,49 @@ export default function RegisterScreen() {
             return;
         }
 
+
+        if (!firstName.trim()) {
+            Alert.alert("Klaida", "Įveskite vardą");
+            return;
+        }
+
+        if (!lastName.trim()) {
+            Alert.alert("Klaida", "Įveskite pavardę");
+            return;
+        }
+
+        if (!phoneNumber.trim()) {
+            Alert.alert("Klaida", "Įveskite telefono numerį");
+            return;
+        }
+
+        if (!email.trim()) {
+            Alert.alert("Klaida", "Įveskite el. paštą");
+            return;
+        }
+
+        if (password.length < 6) {
+            Alert.alert("Klaida", "Slaptažodis per trumpas");
+            return;
+        }
+
         setLoading(true);
 
         const { data, error } = await supabase.auth.signUp({
             email: normalizedEmail,
             password,
-            phone: phoneNumber,
             options: {
                 data: {
                     // Дублировано для более простого использования в SQL, переменные записаны в camelCase а в базе будет snake_case
                     first_name: firstName,
                     last_name: lastName,
+                    full_name: firstName + " " + lastName,
+                    phone_number: phoneNumber
                     // phone: phoneNumber
                 }
             }
         });
-        console.log(JSON.stringify(data.user, null, 2));
-        setLoading(false);
+
 
         if (error) {
             Alert.alert("Klaida", error.message);

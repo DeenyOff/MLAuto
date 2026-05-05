@@ -1,7 +1,10 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "@/constants/theme";
-
+import { useUser } from "@/hooks/use-user";
 export default function HomeHeader() {
+
+    const { avatarLetter } = useUser();
+
     return (
         <View style={styles.header}>
             <View>
@@ -10,7 +13,7 @@ export default function HomeHeader() {
             </View>
 
             <View style={styles.logoCircle}>
-                <Text style={styles.logoLetter}>M</Text>
+                <Text style={styles.logoLetter}>{avatarLetter}</Text>
             </View>
         </View>
     );

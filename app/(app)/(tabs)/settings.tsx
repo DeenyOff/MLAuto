@@ -25,8 +25,6 @@ export default function SettingsScreen() {
                     Programėlė
                 </Text>
 
-                <SettingsButton title="Kalba" />
-                <SettingsButton title="Pranešimai" />
                 <SettingsButton title="Privatumo nustatymai" />
             </View>
 

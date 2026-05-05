@@ -9,18 +9,12 @@ import {
 
 import { Colors } from "@/constants/theme";
 import { useAuth } from "@/contexts/auth";
+import { useUser } from "@/hooks/use-user";
 
 export default function ProfileScreen() {
-    const { session, signOut, user } = useAuth();
-    const metadata = user?.user_metadata ?? {};
-    const metadataEntries = Object.entries(metadata).filter(
-        ([, value]) => value !== null && value !== undefined && value !== ""
-    );
-    const displayName =
-        getMetadataValue(metadata, ["full_name", "name", "username"]) ??
-        user?.email ??
-        "Vartotojas";
-    const avatarLetter = displayName.charAt(0).toUpperCase();
+
+    const { session, signOut } = useAuth();
+    const {user, avatarLetter, displayName } = useUser();
 
     async function handleLogout() {
         try {
@@ -63,20 +57,6 @@ export default function ProfileScreen() {
                     value={formatDate(user?.created_at)}
                 />
             </View>
-
-            {metadataEntries.length > 0 && (
-                <View style={styles.card}>
-                    <Text style={styles.sectionTitle}>Metaduomenys</Text>
-
-                    {metadataEntries.map(([key, value]) => (
-                        <ProfileRow
-                            key={key}
-                            title={key}
-                            value={formatMetadataValue(value)}
-                        />
-                    ))}
-                </View>
-            )}
 
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                 <Text style={styles.logoutText}>Atsijungti</Text>
