@@ -1,4 +1,8 @@
+import { useCallback } from "react";
+
+import { useFocusEffect } from "expo-router";
 import {
+    ActivityIndicator,
     Alert,
     ScrollView,
     StyleSheet,
@@ -9,12 +13,28 @@ import {
 
 import { Colors } from "@/constants/theme";
 import { useAuth } from "@/contexts/auth";
+import { Booking } from "@/services/booking";
+import { useBooking } from "@/hooks/use-booking";
 import { useUser } from "@/hooks/use-user";
 
 export default function ProfileScreen() {
 
     const { session, signOut } = useAuth();
     const {user, avatarLetter, displayName } = useUser();
+    const { reservations, loading, fetchReservations } = useBooking();
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchReservations().catch((error) => {
+                Alert.alert(
+                    "Klaida",
+                    error instanceof Error
+                        ? error.message
+                        : "Nepavyko gauti rezervaciju."
+                );
+            });
+        }, [fetchReservations])
+    );
 
     async function handleLogout() {
         try {
@@ -31,7 +51,7 @@ export default function ProfileScreen() {
         <ScrollView
             style={styles.container}
             contentContainerStyle={{
-                paddingBottom: 40,
+                paddingBottom: 100,
             }}
         >
             <View style={styles.header}>
@@ -58,26 +78,32 @@ export default function ProfileScreen() {
                 />
             </View>
 
+            <View style={styles.card}>
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionTitle}>Mano rezervacijos</Text>
+
+                    {loading ? (
+                        <ActivityIndicator color={Colors.accent} />
+                    ) : null}
+                </View>
+
+                {!loading && reservations.length === 0 ? (
+                    <Text style={styles.emptyText}>Rezervaciju dar nera.</Text>
+                ) : null}
+
+                {reservations.map((reservation) => (
+                    <ReservationItem
+                        key={reservation.id}
+                        reservation={reservation}
+                    />
+                ))}
+            </View>
+
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                 <Text style={styles.logoutText}>Atsijungti</Text>
             </TouchableOpacity>
         </ScrollView>
     );
-}
-
-function getMetadataValue(
-    metadata: Record<string, unknown>,
-    keys: string[]
-): string | undefined {
-    for (const key of keys) {
-        const value = metadata[key];
-
-        if (typeof value === "string" && value.trim()) {
-            return value;
-        }
-    }
-
-    return undefined;
 }
 
 function formatExpiresAt(expiresAt?: number) {
@@ -99,18 +125,6 @@ function formatDate(value?: string) {
     }).format(new Date(value));
 }
 
-function formatMetadataValue(value: unknown) {
-    if (typeof value === "string") {
-        return value;
-    }
-
-    if (typeof value === "number" || typeof value === "boolean") {
-        return String(value);
-    }
-
-    return JSON.stringify(value);
-}
-
 function ProfileRow({
     title,
     value,
@@ -122,6 +136,20 @@ function ProfileRow({
         <View style={styles.row}>
             <Text style={styles.rowTitle}>{title}</Text>
             <Text style={styles.rowValue}>{value}</Text>
+        </View>
+    );
+}
+
+function ReservationItem({ reservation }: { reservation: Booking }) {
+    return (
+        <View style={styles.reservationItem}>
+            <Text style={styles.reservationTitle}>
+                {reservation.service_title ?? reservation.service_id}
+            </Text>
+            <Text style={styles.reservationMeta}>
+                {formatDate(reservation.booking_date)}
+            </Text>
+            <Text style={styles.status}>{reservation.status}</Text>
         </View>
     );
 }
@@ -173,6 +201,12 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         marginBottom: 20,
     },
+    sectionHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 4,
+    },
     row: {
         marginBottom: 16,
     },
@@ -183,6 +217,32 @@ const styles = StyleSheet.create({
     rowValue: {
         color: Colors.text,
         fontSize: 16,
+    },
+    emptyText: {
+        color: Colors.secondary,
+        fontSize: 15,
+    },
+    reservationItem: {
+        borderTopColor: "#2A2A2A",
+        borderTopWidth: 1,
+        paddingTop: 14,
+        marginTop: 14,
+    },
+    reservationTitle: {
+        color: Colors.text,
+        fontSize: 16,
+        fontWeight: "700",
+        marginBottom: 6,
+    },
+    reservationMeta: {
+        color: Colors.secondary,
+        marginBottom: 8,
+    },
+    status: {
+        alignSelf: "flex-start",
+        color: Colors.accent,
+        fontWeight: "700",
+        textTransform: "uppercase",
     },
     logoutButton: {
         backgroundColor: Colors.accent,

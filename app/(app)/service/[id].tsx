@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import {
     Image,
     StyleSheet,
@@ -6,11 +6,23 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import SafeAreaView from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/theme";
 
 export default function ServiceDetails() {
-    const { title, price, carType, description } = useLocalSearchParams();
+    const { id, title, price, carType, description } = useLocalSearchParams();
+
+    function handleBookingPress() {
+        router.push({
+            pathname: "/booking",
+            params: {
+                service_id: String(id),
+                title: String(title ?? ""),
+                price: String(price ?? ""),
+            },
+        });
+    }
 
     return (
         <>
@@ -40,7 +52,11 @@ export default function ServiceDetails() {
                     <Text style={styles.description}>{description}</Text>
                     <Text style={styles.price}>EUR {price}</Text>
 
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={handleBookingPress}
+                        activeOpacity={0.9}
+                    >
                         <Text style={styles.buttonText}>Rezervuoti</Text>
                     </TouchableOpacity>
                 </View>

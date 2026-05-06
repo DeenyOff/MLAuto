@@ -3,8 +3,13 @@ import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
+
+    const insets = useSafeAreaInsets();
+
     return (
         <Tabs
             screenOptions={{
@@ -15,9 +20,9 @@ export default function TabLayout() {
                 tabBarStyle: {
                     backgroundColor: '#121212',
                     borderTopWidth: 0,
-                    height: 75,
+                    height: 60 + insets.bottom,
                     paddingTop: 10,
-                    paddingBottom: 10,
+                    paddingBottom: insets.bottom,
                 },
 
                 tabBarActiveTintColor: '#E9021E',
@@ -37,9 +42,14 @@ export default function TabLayout() {
                     title: 'Pagrindinis',
 
                     tabBarIcon: ({ color }) => (
-                        <IconSymbol
-                            size={26}
-                            name="house.fill"
+                        // <IconSymbol
+                        //     size={26}
+                        //     name="house.fill"
+                        //     color={color}
+                        // />
+                        <Ionicons
+                            name={"home"}
+                            size={24}
                             color={color}
                         />
                     ),
@@ -52,9 +62,14 @@ export default function TabLayout() {
                     title: 'Profilis',
 
                     tabBarIcon: ({ color }) => (
-                        <IconSymbol
-                            size={26}
-                            name="person.fill"
+                        // <IconSymbol
+                        //     size={26}
+                        //     name="person.fill"
+                        //     color={color}
+                        // />
+                        <Ionicons
+                            name={"person"}
+                            size={24}
                             color={color}
                         />
                     ),
@@ -67,9 +82,14 @@ export default function TabLayout() {
                     title: 'Nustatymai',
 
                     tabBarIcon: ({ color }) => (
-                        <IconSymbol
-                            size={26}
-                            name="gearshape.fill"
+                        // <IconSymbol
+                        //     size={26}
+                        //     name="gearshape.fill"
+                        //     color={color}
+                        // />
+                        <Ionicons
+                            name={"settings"}
+                            size={24}
                             color={color}
                         />
                     ),
