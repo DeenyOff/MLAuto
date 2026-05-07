@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/theme";
 import { useBooking } from "@/hooks/use-booking";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function BookingScreen() {
     const { service_id, title, price } = useLocalSearchParams<{

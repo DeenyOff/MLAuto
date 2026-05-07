@@ -39,6 +39,7 @@ export default function ServiceCard({
                         price,
                         carType,
                         description,
+                        service_img_url: image,
                     },
                 })
             }

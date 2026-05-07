@@ -19,13 +19,9 @@ type Service = {
     price: number;
     car_type: string;
     description: string;
+    service_img_url: string;
 };
 
-const serviceImages = [
-    "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1489824904134-891ab64532f1?q=80&w=1200&auto=format&fit=crop",
-];
 
 export default function HomeScreen() {
     const [services, setServices] = useState<Service[]>([]);
@@ -71,11 +67,7 @@ export default function HomeScreen() {
                         price={item.price}
                         description={item.description}
                         carType={item.car_type}
-                        image={
-                            serviceImages[
-                            index % serviceImages.length
-                                ]
-                        }
+                        image={item.service_img_url}
                     />
                 )}
             />

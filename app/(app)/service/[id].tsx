@@ -6,12 +6,12 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import SafeAreaView from "react-native-safe-area-context";
+
 
 import { Colors } from "@/constants/theme";
 
 export default function ServiceDetails() {
-    const { id, title, price, carType, description } = useLocalSearchParams();
+    const { id, title, price, carType, description, service_img_url} = useLocalSearchParams();
 
     function handleBookingPress() {
         router.push({
@@ -40,9 +40,7 @@ export default function ServiceDetails() {
 
             <View style={styles.container}>
                 <Image
-                    source={{
-                        uri: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop",
-                    }}
+                    source={{ uri: String(service_img_url) }}
                     style={styles.image}
                 />
 
