@@ -53,7 +53,7 @@ type ServiceTitleRow = {
 };
 
 
-// Здесь мы получаем данные полльзователя из Authentication Supabase Users/то есть это еще не таблица vartotojas
+// Здесь мы получаем данные пользователя из Authentication Supabase Users/то есть это еще не таблица vartotojas
 export async function getCurrentAuthUser() {
     const { data, error } = await supabase.auth.getUser();
 
@@ -66,64 +66,6 @@ export async function getCurrentAuthUser() {
     }
 
     return data.user;
-}
-
-
-// ВОТ ТУТ КРЫСА ЗАРЫТА!!!! У МЕНЯ ЕСЛИ НЕТ ПОЛЬЗОВАТЕЛЯ ОН СОЗДАЕТСЯ, ЛОГИКА НЕ ТА, ДОЛЖНО БЫТЬ ТАК ЧТО СНАЧАЛА РЕГАЕТСЯ ПОЛЬЗОВАТЕЛЬ А ПОТОМ О НЕМ СРАЗУ ПОЯВЛЯЕТСЯ ЗАПИСЬ В ТАБЛИЦЕ VARTOTOJAS. А СЕЙЧАС КАКОЙ-ТО ПИЗДЕЦ
-export async function ensureVartotojas(user: User) {
-    const { data: existingById, error: existingByIdError } = await supabase
-        .from("vartotojas")
-        .select("id")
-        .eq("id", user.id)
-        .maybeSingle();
-
-    if (existingByIdError) {
-        throw existingByIdError;
-    }
-
-    if (existingById?.id) {
-        return existingById.id as string;
-    }
-
-    const { data: existingByEmail, error: existingByEmailError } = await supabase
-        .from("vartotojas")
-        .select("id")
-        .eq("email", user.email ?? "")
-        .maybeSingle();
-
-    if (existingByEmailError) {
-        throw existingByEmailError;
-    }
-
-    if (existingByEmail?.id) {
-        return existingByEmail.id as string;
-    }
-
-    const metadata = user.user_metadata ?? {};
-    const firstName = getMetadataString(metadata.first_name) ?? "";
-    const lastName = getMetadataString(metadata.last_name) ?? "";
-    const phoneNumber = getMetadataString(metadata.phone_number) ?? "";
-
-    const { data: created, error: createError } = await supabase
-        .from("vartotojas")
-        .insert({
-            id: user.id,
-            role: "client",
-            first_name: firstName,
-            last_name: lastName,
-            login: user.email ?? user.id,
-            email: user.email ?? "",
-            phone_number: phoneNumber,
-            password_hash: "",
-        })
-        .select("id")
-        .single();
-
-    if (createError) {
-        throw createError;
-    }
-
-    return created.id as string;
 }
 
 export async function createBooking({

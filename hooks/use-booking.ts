@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import {
     Booking,
     createBooking,
-    ensureVartotojas,
     getCurrentAuthUser,
     getUserBookings,
 } from "@/services/booking";
@@ -28,7 +27,7 @@ export function useBooking(options: UseBookingOptions = {}) {
 
         try {
             const user = await getCurrentAuthUser();
-            const vartotojasId = await ensureVartotojas(user);
+            const vartotojasId = user.id;
             const bookings = await getUserBookings(vartotojasId);
             setReservations(bookings);
 
@@ -56,7 +55,7 @@ export function useBooking(options: UseBookingOptions = {}) {
 
             try {
                 const user = await getCurrentAuthUser();
-                const vartotojasId = await ensureVartotojas(user);
+                const vartotojasId = user.id;
 
                 return await createBooking({
                     userId: vartotojasId,
