@@ -21,6 +21,8 @@ export function useBooking(options: UseBookingOptions = {}) {
     const [selectedDate, setSelectedDate] = useState("");
     const [loading, setLoading] = useState(false);
     const [reservations, setReservations] = useState<Booking[]>([]);
+    const [date, setDate] = useState(new Date());
+    const [showPicker, setShowPicker] = useState(false);
 
     const fetchReservations = useCallback(async () => {
         setLoading(true);
@@ -87,5 +89,9 @@ export function useBooking(options: UseBookingOptions = {}) {
         reservations,
         fetchReservations,
         createReservation,
+        date,
+        setDate,
+        showPicker,
+        setShowPicker,
     };
 }
