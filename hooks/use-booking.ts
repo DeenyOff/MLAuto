@@ -5,6 +5,7 @@ import {
     createBooking,
     getCurrentAuthUser,
     getUserBookings,
+    getBookingsForDay
 } from "@/services/booking";
 
 type UseBookingOptions = {
@@ -17,12 +18,17 @@ type CreateReservationInput = {
     totalPrice?: number | null;
 };
 
+
 export function useBooking(options: UseBookingOptions = {}) {
     const [selectedDate, setSelectedDate] = useState("");
     const [loading, setLoading] = useState(false);
     const [reservations, setReservations] = useState<Booking[]>([]);
     const [date, setDate] = useState(new Date());
-    const [showPicker, setShowPicker] = useState(false);
+
+    const [selectedDay, setSelectedDay] = useState("")
+    const [busySlots, setBusySlots] = useState<string[]>([]);
+    const [selectedTime, setSelectedTime] = useState("")
+
 
     const fetchReservations = useCallback(async () => {
         setLoading(true);
@@ -37,6 +43,20 @@ export function useBooking(options: UseBookingOptions = {}) {
         } finally {
             setLoading(false);
         }
+    }, []);
+
+    const fetchBusySlots = useCallback(async (date: string) => {
+        const bookings = await getBookingsForDay(date);
+
+        const slots = bookings.map((booking: any) => {
+            const bookingDate = new Date(booking.booking_date);
+
+            return (
+                String(bookingDate.getHours()).padStart(2, "0") + ":00"
+            );
+        });
+
+        setBusySlots(slots);
     }, []);
 
     const createReservation = useCallback(
@@ -91,7 +111,11 @@ export function useBooking(options: UseBookingOptions = {}) {
         createReservation,
         date,
         setDate,
-        showPicker,
-        setShowPicker,
+        selectedDay,
+        setSelectedDay,
+        selectedTime,
+        setSelectedTime,
+        busySlots,
+        fetchBusySlots,
     };
 }

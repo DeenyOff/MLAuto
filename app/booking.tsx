@@ -3,7 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Platform,
+  Platform, ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/theme";
 import { useBooking } from "@/hooks/use-booking";
+import {Calendar} from "react-native-calendars";
 
 export default function BookingScreen() {
   const { service_id, title, price } = useLocalSearchParams<{
@@ -22,8 +23,33 @@ export default function BookingScreen() {
     price?: string;
   }>();
 
-  const { selectedDate, setSelectedDate, loading, createReservation } =
-    useBooking();
+  const AVAILABLE_TIME_SLOTS = [
+    "08:00",
+    "09:00",
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00",
+    "17:00",
+    "18:00",
+    "19:00",
+  ];
+
+  const {
+    selectedDate,
+    setSelectedDate,
+    loading,
+    createReservation,
+    selectedDay,
+    setSelectedDay,
+    selectedTime,
+    setSelectedTime,
+    busySlots,
+    fetchBusySlots
+  } = useBooking();
 
   const safeServiceId = Array.isArray(service_id) ? service_id[0] : service_id;
   const numericPrice = price ? Number(price) : null;
@@ -66,47 +92,85 @@ export default function BookingScreen() {
           headerTintColor: Colors.text,
         }}
       />
-
-      <SafeAreaView style={styles.safeArea}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={styles.container}
-        >
-          <View style={styles.serviceCard}>
-            <Text style={styles.label}>Paslauga</Text>
-            <Text style={styles.serviceTitle}>{title ?? "Paslauga"}</Text>
-
-            <Text style={styles.label}>Kaina</Text>
-            <Text style={styles.servicePrice}>
-              EUR {numericPrice ? numericPrice.toFixed(2) : "-"}
-            </Text>
-          </View>
-
-          <Text style={styles.sectionTitle}>Pasirinkite laika</Text>
-          <TextInput
-            value={selectedDate}
-            onChangeText={setSelectedDate}
-            placeholder="2026-05-15 14:00"
-            placeholderTextColor={Colors.secondary}
-            style={styles.input}
-            editable={!loading}
-            autoCapitalize="none"
-          />
-
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleConfirmBooking}
-            disabled={loading}
-            activeOpacity={0.9}
+      <ScrollView>
+        <SafeAreaView style={styles.safeArea}>
+          <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+              style={styles.container}
           >
-            {loading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text style={styles.buttonText}>Patvirtinti rezervacija</Text>
-            )}
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
+            <View style={styles.serviceCard}>
+              <Text style={styles.label}>Paslauga</Text>
+              <Text style={styles.serviceTitle}>{title ?? "Paslauga"}</Text>
+
+              <Text style={styles.label}>Kaina</Text>
+              <Text style={styles.servicePrice}>
+                EUR {numericPrice ? numericPrice.toFixed(2) : "-"}
+              </Text>
+            </View>
+
+            <Text style={styles.sectionTitle}>Pasirinkite laika</Text>
+            <TextInput
+                value={selectedDate}
+                onChangeText={setSelectedDate}
+                placeholder="2026-05-15 14:00"
+                placeholderTextColor={Colors.secondary}
+                style={styles.input}
+                editable={!loading}
+                autoCapitalize="none"
+            />
+
+            <Calendar
+                onDayPress={(day) => {
+                  setSelectedDay(day.dateString)
+                  fetchBusySlots(day.dateString)
+                }}
+            />
+            <View>
+              {AVAILABLE_TIME_SLOTS.map((slot) => {
+                const isBusy = busySlots.includes(slot);
+
+                const now = new Date();
+
+                const slotDate = new Date(
+                    `${selectedDay}T${slot}:00`
+                );
+
+                const isPast = slotDate < now;
+
+                const disabled = isBusy || isPast;
+
+                return (
+                    <TouchableOpacity
+                        key={slot}
+                        disabled={disabled}
+                        onPress={() => setSelectedTime(slot)}
+                    >
+                      <Text>
+                        {slot}
+                        {isBusy ? " ❌" : ""}
+                      </Text>
+                    </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            <TouchableOpacity
+                style={[styles.button, loading && styles.buttonDisabled]}
+                onPress={handleConfirmBooking}
+                disabled={loading}
+                activeOpacity={0.9}
+            >
+              {loading ? (
+                  <ActivityIndicator color="white" />
+              ) : (
+                  <Text style={styles.buttonText}>Patvirtinti rezervacija</Text>
+              )}
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </ScrollView>
+
+
     </>
   );
 }

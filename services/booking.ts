@@ -179,6 +179,19 @@ export async function getUserBookings(userId: string): Promise<Booking[]> {
     }));
 }
 
+export async function getBookingsForDay(date: string) {
+    const startOfDay = `${date}T00:00:00`;
+    const endOfDay = `${date}T23:59:59`;
+
+    const { data, error } = await supabase
+        .from("rezervacija")
+        .select("booking_date")
+        .gte("booking_date", startOfDay)
+        .lte("booking_date", endOfDay);
+    if (error) throw error;
+    return data ?? [];
+}
+
 function getMetadataString(value: unknown) {
     return typeof value === "string" ? value : undefined;
 }
