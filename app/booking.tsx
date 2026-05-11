@@ -6,7 +6,6 @@ import {
   Platform, ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -39,8 +38,6 @@ export default function BookingScreen() {
   ];
 
   const {
-    selectedDate,
-    setSelectedDate,
     loading,
     createReservation,
     selectedDay,
@@ -55,15 +52,25 @@ export default function BookingScreen() {
   const numericPrice = price ? Number(price) : null;
 
   async function handleConfirmBooking() {
+    const finalDate = `${selectedDay} ${selectedTime}`;
+
     if (!safeServiceId) {
       Alert.alert("Klaida", "Nepavyko rasti paslaugos.");
       return;
     }
 
+    // Проверка на выбор даты и времени
+    if (!selectedDay || !selectedTime) {
+      Alert.alert(
+          "Klaida",
+          "Pasirinkite data ir laika."
+      );
+    }
+
     try {
       await createReservation({
         serviceId: safeServiceId,
-        selectedDate,
+        selectedDate: finalDate,
         totalPrice: Number.isFinite(numericPrice) ? numericPrice : null,
       });
 
@@ -92,8 +99,11 @@ export default function BookingScreen() {
           headerTintColor: Colors.text,
         }}
       />
-      <ScrollView>
-        <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+        >
           <KeyboardAvoidingView
               behavior={Platform.OS === "ios" ? "padding" : undefined}
               style={styles.container}
@@ -109,23 +119,44 @@ export default function BookingScreen() {
             </View>
 
             <Text style={styles.sectionTitle}>Pasirinkite laika</Text>
-            <TextInput
-                value={selectedDate}
-                onChangeText={setSelectedDate}
-                placeholder="2026-05-15 14:00"
-                placeholderTextColor={Colors.secondary}
-                style={styles.input}
-                editable={!loading}
-                autoCapitalize="none"
-            />
 
             <Calendar
                 onDayPress={(day) => {
-                  setSelectedDay(day.dateString)
-                  fetchBusySlots(day.dateString)
+                  setSelectedDay(day.dateString);
+                  fetchBusySlots(day.dateString);
                 }}
+                markedDates={{
+                  [selectedDay]: {
+                    selected: true,
+                    selectedColor: Colors.accent,
+                  },
+                }}
+                minDate={new Date().toISOString().split("T")[0]}
+                theme={{
+                  backgroundColor: Colors.card,
+                  calendarBackground: Colors.card,
+
+                  textSectionTitleColor: Colors.secondary,
+                  dayTextColor: Colors.text,
+                  todayTextColor: Colors.accent,
+                  monthTextColor: Colors.text,
+
+                  arrowColor: Colors.accent,
+
+                  selectedDayBackgroundColor: Colors.accent,
+                  selectedDayTextColor: "#fff",
+
+                  textDisabledColor: "#444",
+
+                  textDayFontWeight: "500",
+                  textMonthFontWeight: "700",
+
+                  textDayFontSize: 16,
+                  textMonthFontSize: 18,
+                }}
+                style={styles.calendar}
             />
-            <View>
+            <View style={styles.slotsContainer}>
               {AVAILABLE_TIME_SLOTS.map((slot) => {
                 const isBusy = busySlots.includes(slot);
 
@@ -139,15 +170,31 @@ export default function BookingScreen() {
 
                 const disabled = isBusy || isPast;
 
+                const selected = selectedTime === slot;
+
                 return (
                     <TouchableOpacity
                         key={slot}
                         disabled={disabled}
                         onPress={() => setSelectedTime(slot)}
+                        style={[
+                          styles.slotButton,
+
+                          selected && styles.selectedSlot,
+
+                          disabled && styles.disabledSlot,
+                        ]}
                     >
-                      <Text>
+                      <Text
+                          style={[
+                            styles.slotText,
+
+                            selected && styles.selectedSlotText,
+
+                            disabled && styles.disabledSlotText,
+                          ]}
+                      >
                         {slot}
-                        {isBusy ? " ❌" : ""}
                       </Text>
                     </TouchableOpacity>
                 );
@@ -167,8 +214,8 @@ export default function BookingScreen() {
               )}
             </TouchableOpacity>
           </KeyboardAvoidingView>
-        </SafeAreaView>
-      </ScrollView>
+        </ScrollView>
+      </SafeAreaView>
 
 
     </>
@@ -176,12 +223,16 @@ export default function BookingScreen() {
 }
 
 const styles = StyleSheet.create({
+
   safeArea: {
     flex: 1,
     backgroundColor: Colors.background,
   },
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 40,
+  },
   container: {
-    flex: 1,
     backgroundColor: Colors.background,
     padding: 20,
   },
@@ -235,5 +286,50 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "700",
+  },
+  calendar: {
+    borderRadius: 20,
+    overflow: "hidden",
+    marginBottom: 30,
+  },
+
+  slotsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    marginBottom: 30,
+  },
+
+  slotButton: {
+    width: "30%",
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#2A2A2A",
+  },
+
+  slotText: {
+    color: Colors.text,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
+  selectedSlot: {
+    backgroundColor: Colors.accent,
+    borderColor: Colors.accent,
+  },
+
+  selectedSlotText: {
+    color: "#fff",
+  },
+
+  disabledSlot: {
+    opacity: 0.35,
+  },
+
+  disabledSlotText: {
+    color: "#666",
   },
 });
