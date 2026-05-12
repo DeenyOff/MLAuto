@@ -29,6 +29,13 @@ export default function AppLayout() {
                     headerShown: true,
                 }}
             />
+
+            <Stack.Screen
+                name="admin/"
+                options={{
+                    headerShown: true,
+                }}
+            />
         </Stack>
     );
 }

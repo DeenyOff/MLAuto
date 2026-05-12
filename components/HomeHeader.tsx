@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "@/constants/theme";
-import { useUser } from "@/hooks/use-user";
+import { useUserInfo } from "@/hooks/use-user";
+
 export default function HomeHeader() {
 
-    const { avatarLetter } = useUser();
+    const { avatarLetter } = useUserInfo();
 
     return (
         <View style={styles.header}>

@@ -1,9 +1,10 @@
 import { useAuth } from "@/contexts/auth";
 
-export function useUser() {
+export function useUserInfo() {
     const { user } = useAuth();
 
     const metadata = user?.user_metadata ?? {};
+
 
     const displayName =
         metadata.full_name ||

@@ -5,10 +5,16 @@ import {
     TouchableOpacity,
     ScrollView,
 } from "react-native";
+import { router } from "expo-router";
 
 import { Colors } from "@/constants/theme";
+import { useAuth } from "@/contexts/auth";
+
 
 export default function SettingsScreen() {
+
+    const { role } = useAuth();
+
     return (
         <ScrollView
             style={styles.container}
@@ -26,6 +32,14 @@ export default function SettingsScreen() {
                 </Text>
 
                 <SettingsButton title="Privatumo nustatymai" />
+
+                {role === "admin" && (
+                    <SettingsButton
+                        title="Admin panelė"
+                        onPress={() => router.push("/admin")}
+                    />
+                )}
+
             </View>
 
             <View style={styles.card}>
@@ -45,6 +59,7 @@ export default function SettingsScreen() {
 
                 <InfoRow title="Versija" value="1.0.0" />
                 <InfoRow title="Platforma" value="Expo React Native" />
+                <InfoRow title="Role" value={role}/>
             </View>
         </ScrollView>
     );
@@ -52,11 +67,13 @@ export default function SettingsScreen() {
 
 function SettingsButton({
                             title,
+                            onPress
                         }: {
     title: string;
+    onPress?: () => void;
 }) {
     return (
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={onPress}>
             <Text style={styles.buttonText}>
                 {title}
             </Text>
@@ -69,7 +86,7 @@ function InfoRow({
                      value,
                  }: {
     title: string;
-    value: string;
+    value: string|null;
 }) {
     return (
         <View style={styles.infoRow}>

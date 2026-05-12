@@ -15,6 +15,7 @@ type AuthContextValue = {
     initializing: boolean;
     session: Session | null;
     user: User | null;
+    role: string | null;
     signOut: () => Promise<void>;
 };
 
@@ -23,25 +24,59 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: PropsWithChildren) {
     const [initializing, setInitializing] = useState(true);
     const [session, setSession] = useState<Session | null>(null);
+    const [role, setRole] = useState<string | null>(null);
+
+    async function loadUserRole(userId: string) {
+        const { data, error } = await supabase
+            .from("vartotojas")
+            .select("role")
+            .eq("id", userId)
+            .single();
+
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        setRole(data.role);
+    }
 
     useEffect(() => {
         let mounted = true;
 
-        supabase.auth.getSession().then(({ data }) => {
+        async function initializeAuth() {
+            const { data } = await supabase.auth.getSession();
+
             if (!mounted) {
                 return;
             }
 
             setSession(data.session);
+
+            if (data.session?.user) {
+                await loadUserRole(data.session.user.id);
+            }
+
             setInitializing(false);
-        });
+        }
+
+        initializeAuth();
 
         const {
             data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-            setSession(nextSession);
-            setInitializing(false);
-        });
+        } = supabase.auth.onAuthStateChange(
+            async (_event, nextSession) => {
+                setSession(nextSession);
+
+                if (nextSession?.user) {
+                    await loadUserRole(nextSession.user.id);
+                } else {
+                    setRole(null);
+                }
+
+                setInitializing(false);
+            }
+        );
 
         return () => {
             mounted = false;
@@ -54,6 +89,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
             initializing,
             session,
             user: session?.user ?? null,
+            role,
             signOut: async () => {
                 const { error } = await supabase.auth.signOut();
 
@@ -62,7 +98,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
                 }
             },
         }),
-        [initializing, session]
+        [initializing, session, role]
     );
 
     return (

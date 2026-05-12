@@ -15,13 +15,15 @@ import { Colors } from "@/constants/theme";
 import { useAuth } from "@/contexts/auth";
 import { Booking } from "@/services/booking";
 import { useBooking } from "@/hooks/use-booking";
-import { useUser } from "@/hooks/use-user";
+import { useUserInfo } from "@/hooks/use-user";
 
 export default function ProfileScreen() {
 
     const { session, signOut } = useAuth();
-    const {user, avatarLetter, displayName } = useUser();
+    const {user, avatarLetter, displayName } = useUserInfo();
     const { reservations, loading, fetchReservations } = useBooking();
+
+    const { date } = useBooking();
 
     useFocusEffect(
         useCallback(() => {
@@ -97,6 +99,9 @@ export default function ProfileScreen() {
                         reservation={reservation}
                     />
                 ))}
+            </View>
+            <View style={styles.card}>
+                <Text style={styles.emptyText}>{date.toString()} </Text>
             </View>
 
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>

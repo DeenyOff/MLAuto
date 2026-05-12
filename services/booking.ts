@@ -5,7 +5,7 @@ import { supabase } from "@/services/supabase";
 // Описание состояний статуса Бронирования в виде строки
 export type BookingStatus = "active" | "cancelled" | "completed" | string;
 
-// Описание БД с дополнительными полями service_id  ervice_title для работы в приложении
+// Описание БД с дополнительными полями service_id  service_title для работы в приложении
 export type Booking = {
     id: string;
     id_vartotojas: string;
