@@ -5,21 +5,23 @@ import { Colors } from "@/constants/theme";
 
 import { useAdmin } from "@/hooks/use-admin";
 import {useEffect} from "react";
+import {router} from "expo-router";
 
 export default function AdminScreen() {
 
     const {
-
         bookingsCount,
         fetchBookingsCount,
         bookings,
         fetchBookings,
-
+        user,
+        fetchUsers
     } = useAdmin();
 
     useEffect(() => {
         fetchBookingsCount();
         fetchBookings();
+        fetchUsers();
     }, []);
 
 
@@ -51,7 +53,7 @@ export default function AdminScreen() {
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Greiti veiksmai</Text>
 
-                    <TouchableOpacity style={styles.actionButton}>
+                    <TouchableOpacity style={styles.actionButton} onPress={() => router.push("/admin/userListPage")}>
                         <Text style={styles.actionButtonText}>
                             Vartotojų sąrašas
                         </Text>

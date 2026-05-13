@@ -1,15 +1,16 @@
-import {getBookingList, getBookingsCount} from "@/services/admin";
+import {getBookingList, getBookingsCount, getUsers} from "@/services/admin";
 import { useState } from "react";
-import {BookingItem} from "@/services/admin";
+import {BookingItem, Users} from "@/services/admin";
+import {User} from "@supabase/supabase-js";
 
 export function useAdmin() {
-
-
 
     // fetchBookingCount
     const [bookingsCount, setBookingsCount] = useState(0);
     // fetchBookings
     const [bookings, setBookings] = useState<BookingItem[]>();
+    //Инфа про юзеров
+    const [user, setUser] = useState<Users[]>();
 
     // Функция запроса и записи в переменную bookingsCount кол-ва резерваций
     async function fetchBookingsCount() {
@@ -38,10 +39,17 @@ export function useAdmin() {
         setBookings(formattedBookings);
     }
 
+    async function fetchUsers() {
+        const data = await getUsers();
+        setUser(data);
+    }
+
     return {
         bookingsCount,
         fetchBookingsCount,
         bookings,
         fetchBookings,
+        user,
+        fetchUsers,
     };
 }

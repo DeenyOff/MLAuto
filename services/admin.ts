@@ -1,4 +1,5 @@
 import {supabase} from "@/services/supabase";
+import {User} from "@supabase/supabase-js";
 
 export type BookingItem = {
     id: string;
@@ -6,6 +7,16 @@ export type BookingItem = {
     status: string;
     booking_date: string;
 }
+
+export type Users = {
+    id: string;
+    firtst_name: string;
+    last_name: string;
+    email: string;
+    phone_number: string;
+}
+
+
 // Здесь получаем кол-во всех резерваций
 export async function getBookingsCount() {
     const { count, error } = await supabase
@@ -25,5 +36,14 @@ export async function getBookingList(): Promise<BookingItem[]> {
 
     if (error) throw error;
     return (data ?? []) as BookingItem[];
+}
+
+export async function getUsers(): Promise<Users[]> {
+    const { data, error } = await supabase
+    .from("vartotojas")
+    .select("*")
+
+    if (error) throw error;
+    return data ?? [];
 }
 
