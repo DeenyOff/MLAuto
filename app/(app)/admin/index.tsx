@@ -3,11 +3,25 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/theme";
 
-import { Booking } from "@/services/booking";
+import { useAdmin } from "@/hooks/use-admin";
+import {useEffect} from "react";
 
 export default function AdminScreen() {
 
-    const todayRezervationsAmmount=0;
+    const {
+
+        bookingsCount,
+        fetchBookingsCount,
+        bookings,
+        fetchBookings,
+
+    } = useAdmin();
+
+    useEffect(() => {
+        fetchBookingsCount();
+        fetchBookings();
+    }, []);
+
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -22,8 +36,9 @@ export default function AdminScreen() {
                 </Text>
 
                 <View style={styles.statsContainer}>
+
                     <View style={styles.statCard}>
-                        <Text style={styles.statNumber}>12</Text>
+                        <Text style={styles.statNumber}>{bookingsCount}</Text>
                         <Text style={styles.statLabel}>Rezervacijos</Text>
                     </View>
 
@@ -38,71 +53,59 @@ export default function AdminScreen() {
 
                     <TouchableOpacity style={styles.actionButton}>
                         <Text style={styles.actionButtonText}>
-                            Peržiūrėti rezervacijas
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.actionButton}>
-                        <Text style={styles.actionButtonText}>
                             Vartotojų sąrašas
                         </Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.actionButton}>
-                        <Text style={styles.actionButtonText}>
-                            Siųsti pranešimą
-                        </Text>
-                    </TouchableOpacity>
                 </View>
+
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>
-                        Naujausios rezervacijos
+                        Rezervacijų sąrašas
                     </Text>
 
-                    <View style={styles.bookingCard}>
-                        <View>
-                            <Text style={styles.bookingTitle}>
-                                BMW M240 Detailing
-                            </Text>
+                    {bookings?.map(booking => (
+                        <BookingCard key={booking.id} title={"Paslauga"} bookingDate={booking.booking_date} status={booking.status} />
+                    ))}
 
-                            <Text style={styles.bookingInfo}>
-                                2026-05-12 • 14:00
-                            </Text>
-                        </View>
 
-                        <View style={styles.statusBadge}>
-                            <Text style={styles.statusText}>
-                                ACTIVE
-                            </Text>
-                        </View>
-                    </View>
-
-                    <View style={styles.bookingCard}>
-                        <View>
-                            <Text style={styles.bookingTitle}>
-                                Audi A6 Poliravimas
-                            </Text>
-
-                            <Text style={styles.bookingInfo}>
-                                2026-05-13 • 10:00
-                            </Text>
-                        </View>
-
-                        <View
-                            style={[
-                                styles.statusBadge,
-                                styles.pendingBadge,
-                            ]}
-                        >
-                            <Text style={styles.statusText}>
-                                PENDING
-                            </Text>
-                        </View>
-                    </View>
                 </View>
             </ScrollView>
         </SafeAreaView>
+    );
+}
+
+
+type BookingCardProps = {
+    title: string;
+    bookingDate: string;
+    status: string;
+};
+
+export function BookingCard({
+                                title,
+                                bookingDate,
+                                status,
+                            }: BookingCardProps) {
+    return (
+        <View style={styles.bookingCard}>
+            <View>
+                <Text style={styles.bookingTitle}>
+                    {title}
+                </Text>
+
+                <Text style={styles.bookingInfo}>
+                    {bookingDate}
+                </Text>
+            </View>
+
+            <View style={styles.statusBadge}>
+                <Text style={styles.statusText}>
+                    {status.toUpperCase()}
+                </Text>
+            </View>
+        </View>
     );
 }
 
