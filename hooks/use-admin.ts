@@ -1,7 +1,6 @@
-import {getBookingList, getBookingsCount, getUsers} from "@/services/admin";
+import {getBookingList, getBookingsCount, getUsers, updateBookingStatus, deleteBooking, updateBookingDate} from "@/services/admin";
 import { useState } from "react";
-import {BookingItem, Users} from "@/services/admin";
-import {User} from "@supabase/supabase-js";
+import { BookingItem, UsersType } from "@/services/admin";
 
 export function useAdmin() {
 
@@ -10,7 +9,7 @@ export function useAdmin() {
     // fetchBookings
     const [bookings, setBookings] = useState<BookingItem[]>();
     //Инфа про юзеров
-    const [user, setUser] = useState<Users[]>();
+    const [users, setUser] = useState<UsersType[]>([]);
 
     // Функция запроса и записи в переменную bookingsCount кол-ва резерваций
     async function fetchBookingsCount() {
@@ -39,17 +38,55 @@ export function useAdmin() {
         setBookings(formattedBookings);
     }
 
+    // Получить пользователей
     async function fetchUsers() {
         const data = await getUsers();
         setUser(data);
     }
+
+    // Изменить статус резервации по id
+    async function changeBookingStatus(
+        bookingId: string,
+        status: string
+    ) {
+        await updateBookingStatus(bookingId, status);
+
+        await fetchBookings();
+    }
+
+    // Удалить резервацию по id
+    async function removeBooking(
+        bookingId: string
+    ) {
+        await deleteBooking(bookingId);
+
+        await fetchBookings();
+    }
+
+    // Изменение даты резервации
+    async function changeBookingDate(
+        bookingId: string,
+        bookingDate: string
+    ) {
+        await updateBookingDate(
+            bookingId,
+            bookingDate
+        );
+
+        await fetchBookings();
+    }
+
+
 
     return {
         bookingsCount,
         fetchBookingsCount,
         bookings,
         fetchBookings,
-        user,
+        users,
         fetchUsers,
+        changeBookingStatus,
+        removeBooking,
+        changeBookingDate
     };
 }

@@ -30,12 +30,6 @@ export default function AppLayout() {
                 }}
             />
 
-            <Stack.Screen
-                name="admin/"
-                options={{
-                    headerShown: true,
-                }}
-            />
         </Stack>
     );
 }

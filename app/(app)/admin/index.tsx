@@ -4,8 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/theme";
 
 import { useAdmin } from "@/hooks/use-admin";
-import {useEffect} from "react";
-import {router} from "expo-router";
+import {useCallback, useEffect} from "react";
+import {router, Stack, useFocusEffect } from "expo-router";
 
 export default function AdminScreen() {
 
@@ -14,84 +14,112 @@ export default function AdminScreen() {
         fetchBookingsCount,
         bookings,
         fetchBookings,
-        user,
+        users,
         fetchUsers
     } = useAdmin();
 
-    useEffect(() => {
-        fetchBookingsCount();
-        fetchBookings();
-        fetchUsers();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            fetchBookingsCount();
+            fetchBookings();
+            fetchUsers();
+        }, [])
+    );
 
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <ScrollView
-                style={styles.container}
-                contentContainerStyle={styles.content}
-                showsVerticalScrollIndicator={false}
-            >
-                <Text style={styles.title}>Admin Panelė</Text>
-                <Text style={styles.subtitle}>
-                    Valdykite rezervacijas ir vartotojus
-                </Text>
-
-                <View style={styles.statsContainer}>
-
-                    <View style={styles.statCard}>
-                        <Text style={styles.statNumber}>{bookingsCount}</Text>
-                        <Text style={styles.statLabel}>Rezervacijos</Text>
-                    </View>
-
-                    <View style={styles.statCard}>
-                        <Text style={styles.statNumber}>4</Text>
-                        <Text style={styles.statLabel}>Laukiama</Text>
-                    </View>
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Greiti veiksmai</Text>
-
-                    <TouchableOpacity style={styles.actionButton} onPress={() => router.push("/admin/userListPage")}>
-                        <Text style={styles.actionButtonText}>
-                            Vartotojų sąrašas
-                        </Text>
-                    </TouchableOpacity>
-
-                </View>
-
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>
-                        Rezervacijų sąrašas
+        <>
+            <Stack.Screen
+                options={{
+                    title: "ADMIN PANEL",
+                    headerShown: true,
+                    headerStyle: {
+                        backgroundColor: Colors.background,
+                    },
+                    headerBackTitle: "Atgal",
+                    headerTintColor: Colors.text,
+                }}
+            />
+            <SafeAreaView style={styles.safeArea}>
+                <ScrollView
+                    style={styles.container}
+                    contentContainerStyle={styles.content}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <Text style={styles.title}>Admin Panelė</Text>
+                    <Text style={styles.subtitle}>
+                        Valdykite rezervacijas ir vartotojus
                     </Text>
 
-                    {bookings?.map(booking => (
-                        <BookingCard key={booking.id} title={"Paslauga"} bookingDate={booking.booking_date} status={booking.status} />
-                    ))}
+                    <View style={styles.statsContainer}>
+
+                        <View style={styles.statCard}>
+                            <Text style={styles.statNumber}>{bookingsCount}</Text>
+                            <Text style={styles.statLabel}>Rezervacijos</Text>
+                        </View>
+
+                        <View style={styles.statCard}>
+                            <Text style={styles.statNumber}>{users.length}</Text>
+                            <Text style={styles.statLabel}>Vartotojų</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Greiti veiksmai</Text>
+
+                        <TouchableOpacity style={styles.actionButton} onPress={() => router.push("/admin/userListPage")}>
+                            <Text style={styles.actionButtonText}>
+                                Vartotojų sąrašas
+                            </Text>
+                        </TouchableOpacity>
+
+                    </View>
 
 
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>
+                            Rezervacijų sąrašas
+                        </Text>
+
+                        {bookings?.map(booking => (
+                            <BookingCard
+                                key={booking.id}
+                                id={booking.id}
+                                title={booking.service_title ?? "Paslauga"}
+                                bookingDate={booking.booking_date}
+                                status={booking.status}
+                            />
+                        ))}
+
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
+        </>
     );
 }
 
 
 type BookingCardProps = {
+    id: string;
     title: string;
     bookingDate: string;
     status: string;
 };
 
 export function BookingCard({
+                                id,
                                 title,
                                 bookingDate,
                                 status,
                             }: BookingCardProps) {
     return (
-        <View style={styles.bookingCard}>
+        <TouchableOpacity
+            style={styles.bookingCard}
+            activeOpacity={0.9}
+            onPress={() =>
+                router.push(`/admin/booking/${id}`)
+            }
+        >
             <View>
                 <Text style={styles.bookingTitle}>
                     {title}
@@ -107,7 +135,7 @@ export function BookingCard({
                     {status.toUpperCase()}
                 </Text>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 }
 

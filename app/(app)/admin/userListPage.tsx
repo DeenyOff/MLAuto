@@ -10,90 +10,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/theme";
 
-type UserCardProps = {
-    name: string;
-    email: string;
-    phone: string;
-    role: "admin" | "client";
-};
+import {useEffect} from "react";
 
-function UserCard({
-                      name,
-                      email,
-                      phone,
-                      role,
-                  }: UserCardProps) {
-    return (
-        <TouchableOpacity
-            activeOpacity={0.9}
-            style={styles.userCard}
-        >
-            <View style={styles.userTopRow}>
-                <View>
-                    <Text style={styles.userName}>
-                        {name}
-                    </Text>
-
-                    <Text style={styles.userEmail}>
-                        {email}
-                    </Text>
-                </View>
-
-                <View
-                    style={[
-                        styles.roleBadge,
-                        role === "admin"
-                            ? styles.adminBadge
-                            : styles.clientBadge,
-                    ]}
-                >
-                    <Text style={styles.roleText}>
-                        {role.toUpperCase()}
-                    </Text>
-                </View>
-            </View>
-
-            <View style={styles.divider} />
-
-            <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>
-                    Telefono numeris
-                </Text>
-
-                <Text style={styles.infoValue}>
-                    {phone}
-                </Text>
-            </View>
-        </TouchableOpacity>
-    );
-}
+import {useAdmin} from "@/hooks/use-admin";
+import { UsersType } from "@/services/admin";
 
 export default function UsersScreen() {
 
-    // Пока мок данные
-    const users = [
-        {
-            id: "1",
-            name: "Denis Scek",
-            email: "denis@gmail.com",
-            phone: "+37060000000",
-            role: "admin" as const,
-        },
-        {
-            id: "2",
-            name: "Jonas Jonaitis",
-            email: "jonas@gmail.com",
-            phone: "+37061111111",
-            role: "client" as const,
-        },
-        {
-            id: "3",
-            name: "Petras Petrauskas",
-            email: "petras@gmail.com",
-            phone: "+37062222222",
-            role: "client" as const,
-        },
-    ];
+    const { users, fetchUsers } = useAdmin();
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
     return (
         <>
@@ -104,6 +32,7 @@ export default function UsersScreen() {
                     headerStyle: {
                         backgroundColor: Colors.background,
                     },
+                    headerBackTitle: "Atgal",
                     headerTintColor: Colors.text,
                 }}
             />
@@ -119,22 +48,55 @@ export default function UsersScreen() {
                         </Text>
 
                         <Text style={styles.subtitle}>
-                            Bendras vartotoju skaicius: {users.length}
+                            Bendras vartotoju skaicius: {users?.length ?? 0}
                         </Text>
                     </View>
 
                     {users.map((user) => (
                         <UserCard
-                            key={user.id}
-                            name={user.name}
+                            first_name={user.first_name}
+                            last_name={user.last_name}
                             email={user.email}
-                            phone={user.phone}
-                            role={user.role}
+                            phone_number={user.phone_number}
                         />
                     ))}
                 </ScrollView>
             </SafeAreaView>
         </>
+    );
+}
+
+function UserCard({
+                      first_name,
+                      last_name,
+                      email,
+                      phone_number,
+                  }: UsersType) {
+    return (
+        <TouchableOpacity
+            activeOpacity={0.9}
+            style={styles.userCard}
+        >
+            <View style={styles.userLeft}>
+                <Text
+                    style={styles.userName}
+                    numberOfLines={1}
+                >
+                    {first_name ?? ""} {last_name ?? ""}
+                </Text>
+
+                <Text
+                    style={styles.userInfo}
+                    numberOfLines={1}
+                >
+                    {email}
+                </Text>
+
+                <Text style={styles.userInfo}>
+                    {phone_number}
+                </Text>
+            </View>
+        </TouchableOpacity>
     );
 }
 
@@ -167,35 +129,42 @@ const styles = StyleSheet.create({
 
     userCard: {
         backgroundColor: Colors.card,
-        borderRadius: 22,
-        padding: 20,
-        marginBottom: 16,
+        borderRadius: 16,
+        paddingVertical: 14,
+        paddingHorizontal: 16,
+        marginBottom: 12,
+
         borderWidth: 1,
         borderColor: "#242424",
-    },
 
-    userTopRow: {
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "flex-start",
+        alignItems: "center",
+    },
+
+    userLeft: {
+        flex: 1,
+        paddingRight: 12,
     },
 
     userName: {
         color: Colors.text,
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: "700",
-        marginBottom: 6,
+        marginBottom: 4,
     },
 
-    userEmail: {
+    userInfo: {
         color: Colors.secondary,
-        fontSize: 14,
+        fontSize: 13,
+        marginBottom: 2,
     },
 
     roleBadge: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
         borderRadius: 999,
+        alignSelf: "flex-start",
     },
 
     adminBadge: {
@@ -208,28 +177,7 @@ const styles = StyleSheet.create({
 
     roleText: {
         color: "white",
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: "700",
-    },
-
-    divider: {
-        height: 1,
-        backgroundColor: "#2A2A2A",
-        marginVertical: 18,
-    },
-
-    infoRow: {
-        gap: 6,
-    },
-
-    infoLabel: {
-        color: Colors.secondary,
-        fontSize: 13,
-    },
-
-    infoValue: {
-        color: Colors.text,
-        fontSize: 16,
-        fontWeight: "600",
     },
 });
