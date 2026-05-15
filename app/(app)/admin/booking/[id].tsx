@@ -39,9 +39,25 @@ export default function BookingDetailsScreen() {
     }, []);
 
     useEffect(() => {
-        if (booking) {
-            setEditedDate(booking.booking_date);
+        if (!booking?.booking_date) {
+            return;
         }
+
+        const date = new Date(booking.booking_date);
+
+        const formatted =
+            date.getFullYear() +
+            "-" +
+            String(date.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(date.getDate()).padStart(2, "0") +
+            " " +
+            String(date.getHours()).padStart(2, "0") +
+            ":" +
+            String(date.getMinutes()).padStart(2, "0");
+
+        setEditedDate(formatted);
+
     }, [booking]);
 
     if (!booking) {
@@ -79,7 +95,15 @@ export default function BookingDetailsScreen() {
                                 </Text>
 
                                 <Text style={styles.bookingDate}>
-                                    {booking.booking_date}
+                                    {new Date(
+                                        booking.booking_date
+                                    ).toLocaleString("lt-LT", {
+                                        year: "numeric",
+                                        month: "2-digit",
+                                        day: "2-digit",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    })}
                                 </Text>
                             </View>
 
@@ -145,31 +169,55 @@ export default function BookingDetailsScreen() {
                             </Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={styles.secondaryButton}
-                            activeOpacity={0.9}
-                            onPress={async () => {
-                                await changeBookingDate(
-                                    booking.id,
-                                    editedDate
-                                );
-                            }}
-                        >
-                            <Text style={styles.secondaryButtonText}>
-                                Redaguoti data
-                            </Text>
-                        </TouchableOpacity>
                         <Text style={styles.infoLabel}>
-                            Nauja data
+                            Nauja data ir laikas
                         </Text>
-
                         <TextInput
                             value={editedDate}
                             onChangeText={setEditedDate}
                             placeholder="2026-05-20 14:00"
                             placeholderTextColor={Colors.secondary}
                             style={styles.input}
+                            autoCapitalize="none"
+                            keyboardType="numbers-and-punctuation"
                         />
+
+                        <Text style={styles.helperText}>
+                            Formatas: YYYY-MM-DD HH:MM
+                        </Text>
+
+                        <TouchableOpacity
+                            style={styles.secondaryButton}
+                            activeOpacity={0.9}
+                            onPress={async () => {
+
+                                if (!editedDate.trim()) {
+                                    return;
+                                }
+
+                                const parsedDate = new Date(
+                                    editedDate.replace(" ", "T")
+                                );
+
+                                if (Number.isNaN(parsedDate.getTime())) {
+                                    return;
+                                }
+
+                                await changeBookingDate(
+                                    booking.id,
+                                    parsedDate.toISOString()
+                                );
+
+                                setBooking({
+                                    ...booking,
+                                    booking_date: editedDate,
+                                });
+                            }}
+                        >
+                            <Text style={styles.secondaryButtonText}>
+                                Redaguoti data
+                            </Text>
+                        </TouchableOpacity>
 
                         <TouchableOpacity
                             style={styles.secondaryButton}
@@ -347,5 +395,11 @@ const styles = StyleSheet.create({
 
         borderWidth: 1,
         borderColor: "#2A2A2A",
+    },
+    helperText: {
+        color: Colors.secondary,
+        fontSize: 12,
+        marginBottom: 18,
+        marginTop: -10,
     },
 });

@@ -100,9 +100,6 @@ export default function ProfileScreen() {
                     />
                 ))}
             </View>
-            <View style={styles.card}>
-                <Text style={styles.emptyText}>{date.toString()} </Text>
-            </View>
 
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                 <Text style={styles.logoutText}>Atsijungti</Text>
