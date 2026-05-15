@@ -8,6 +8,7 @@ import {
     ScrollView,
     TouchableOpacity,
     TextInput,
+    Linking
 } from "react-native";
 
 import { getBookingById } from "@/services/admin";
@@ -159,7 +160,7 @@ export default function BookingDetailsScreen() {
 
                         <TouchableOpacity
                             style={styles.primaryButton}
-                            activeOpacity={0.9}
+                            activeOpacity={0.7}
                             onPress={() =>
                                 changeBookingStatus(booking.id, "completed")
                             }
@@ -188,7 +189,25 @@ export default function BookingDetailsScreen() {
 
                         <TouchableOpacity
                             style={styles.secondaryButton}
-                            activeOpacity={0.9}
+                            activeOpacity={0.7}
+                            onPress={() => {
+                                if (!booking.user.phone_number) {
+                                    return;
+                                }
+
+                                Linking.openURL(
+                                    `tel:${booking.user.phone_number}`
+                                );
+                            }}
+                        >
+                            <Text style={styles.secondaryButtonText}>
+                                Susisiekti su klientu
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.secondaryButton}
+                            activeOpacity={0.7}
                             onPress={async () => {
 
                                 if (!editedDate.trim()) {
@@ -220,17 +239,8 @@ export default function BookingDetailsScreen() {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={styles.secondaryButton}
-                            activeOpacity={0.9}
-                        >
-                            <Text style={styles.secondaryButtonText}>
-                                Susisiekti su klientu
-                            </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
                             style={styles.dangerButton}
-                            activeOpacity={0.9}
+                            activeOpacity={0.7}
                             onPress={async () => {
                                 await removeBooking(booking.id);
 
