@@ -10,7 +10,6 @@ import { supabase } from "@/services/supabase";
 import { Colors } from "@/constants/theme";
 
 import HomeHeader from "@/components/HomeHeader";
-import PromoBanner from "@/components/PromoBanner";
 import ServiceCard from "@/components/ServiceCard";
 
 type Service = {
@@ -46,8 +45,6 @@ export default function HomeScreen() {
     return (
         <View style={styles.container}>
             <HomeHeader />
-
-            <PromoBanner />
 
             <Text style={styles.sectionTitle}>
                 Paslaugos

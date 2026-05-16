@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "@/constants/theme";
 import { useUserInfo } from "@/hooks/use-user";
+import { Spacing } from "@/components/ui/tokens";
 
 export default function HomeHeader() {
 
@@ -25,7 +26,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 25,
+        marginBottom: Spacing.xxl,
     },
 
     smallText: {
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
         color: Colors.text,
         fontSize: 32,
         fontWeight: "700",
-        marginTop: 5,
+        marginTop: Spacing.xs,
     },
     logoCircle: {
         width: 50,

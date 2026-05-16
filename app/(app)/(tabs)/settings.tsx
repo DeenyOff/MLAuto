@@ -1,159 +1,87 @@
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    ScrollView,
-} from "react-native";
 import { router } from "expo-router";
+import { StyleSheet, Text } from "react-native";
 
-import { Colors } from "@/constants/theme";
+import { SecondaryButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { InfoRow } from "@/components/ui/InfoRow";
+import { ScreenContainer } from "@/components/ui/ScreenContainer";
+import { SectionTitle } from "@/components/ui/SectionTitle";
+import { Spacing, uiStyles } from "@/components/ui/tokens";
 import { useAuth } from "@/contexts/auth";
 
-
 export default function SettingsScreen() {
-
     const { role } = useAuth();
 
     return (
-        <ScrollView
-            style={styles.container}
-            contentContainerStyle={{
-                paddingBottom: 40,
-            }}
-        >
-            <Text style={styles.title}>
-                Nustatymai
-            </Text>
+        <ScreenContainer scroll safeArea={false} contentStyle={styles.content}>
+            <Text style={styles.title}>Nustatymai</Text>
 
-            <View style={styles.card}>
-                <Text style={styles.sectionTitle}>
-                    Programėlė
-                </Text>
+            <Card style={styles.card}>
+                <SectionTitle>Programa</SectionTitle>
 
                 <SettingsButton title="Privatumo nustatymai" />
 
                 {role === "admin" && (
                     <SettingsButton
-                        title="Admin panelė"
+                        title="Admin panel"
                         onPress={() => router.push("/admin")}
                     />
                 )}
+            </Card>
 
-            </View>
-
-            <View style={styles.card}>
-                <Text style={styles.sectionTitle}>
-                    Pagalba
-                </Text>
+            <Card style={styles.card}>
+                <SectionTitle>Pagalba</SectionTitle>
 
                 <SettingsButton title="Kontaktai" />
                 <SettingsButton title="DUK" />
                 <SettingsButton title="Pagalbos centras" />
-            </View>
+            </Card>
 
-            <View style={styles.card}>
-                <Text style={styles.sectionTitle}>
-                    Informacija
-                </Text>
+            <Card style={styles.card}>
+                <SectionTitle>Informacija</SectionTitle>
 
                 <InfoRow title="Versija" value="1.0.0" />
                 <InfoRow title="Platforma" value="Expo React Native" />
-                <InfoRow title="Role" value={role}/>
-            </View>
-        </ScrollView>
+                <InfoRow title="Role" value={role} />
+            </Card>
+        </ScreenContainer>
     );
 }
 
 function SettingsButton({
-                            title,
-                            onPress
-                        }: {
+    title,
+    onPress,
+}: {
     title: string;
     onPress?: () => void;
 }) {
     return (
-        <TouchableOpacity style={styles.button} onPress={onPress}>
-            <Text style={styles.buttonText}>
-                {title}
-            </Text>
-        </TouchableOpacity>
-    );
-}
-
-function InfoRow({
-                     title,
-                     value,
-                 }: {
-    title: string;
-    value: string|null;
-}) {
-    return (
-        <View style={styles.infoRow}>
-            <Text style={styles.infoTitle}>
-                {title}
-            </Text>
-
-            <Text style={styles.infoValue}>
-                {value}
-            </Text>
-        </View>
+        <SecondaryButton
+            title={title}
+            onPress={onPress}
+            style={styles.settingsButton}
+            textStyle={styles.settingsButtonText}
+        />
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.background,
+    content: {
         paddingTop: 70,
-        paddingHorizontal: 20,
     },
-
     title: {
-        color: Colors.text,
-        fontSize: 32,
-        fontWeight: "700",
-        marginBottom: 30,
+        ...uiStyles.screenTitle,
+        marginBottom: Spacing.xxxl,
     },
-
     card: {
-        backgroundColor: Colors.card,
-        borderRadius: 6,
-        padding: 18,
-        marginBottom: 20,
+        marginBottom: Spacing.xl,
     },
-
-    sectionTitle: {
-        color: Colors.text,
-        fontSize: 20,
-        fontWeight: "700",
-        marginBottom: 20,
+    settingsButton: {
+        alignItems: "flex-start",
+        marginBottom: Spacing.md,
+        minHeight: 0,
     },
-
-    button: {
-        backgroundColor: "#232323",
-        padding: 16,
-        borderRadius: 6,
-        marginBottom: 12,
-    },
-
-    buttonText: {
-        color: Colors.text,
-        fontSize: 16,
-        fontWeight: "600",
-    },
-
-    infoRow: {
-        marginBottom: 14,
-    },
-
-    infoTitle: {
-        color: Colors.secondary,
-        marginBottom: 4,
-    },
-
-    infoValue: {
-        color: Colors.text,
-        fontSize: 16,
+    settingsButtonText: {
+        textAlign: "left",
     },
 });

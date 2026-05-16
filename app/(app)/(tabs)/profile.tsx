@@ -4,26 +4,28 @@ import { useFocusEffect } from "expo-router";
 import {
     ActivityIndicator,
     Alert,
-    ScrollView,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
 } from "react-native";
 
+import { DangerButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/StateViews";
+import { InfoRow } from "@/components/ui/InfoRow";
+import { ReservationCard } from "@/components/cards/ReservationCard";
+import { ScreenContainer } from "@/components/ui/ScreenContainer";
+import { SectionTitle } from "@/components/ui/SectionTitle";
+import { Radius, Spacing } from "@/components/ui/tokens";
 import { Colors } from "@/constants/theme";
 import { useAuth } from "@/contexts/auth";
-import { Booking } from "@/services/booking";
 import { useBooking } from "@/hooks/use-booking";
 import { useUserInfo } from "@/hooks/use-user";
 
 export default function ProfileScreen() {
-
     const { session, signOut } = useAuth();
-    const {user, avatarLetter, displayName } = useUserInfo();
+    const { user, avatarLetter, displayName } = useUserInfo();
     const { reservations, loading, fetchReservations } = useBooking();
-
-    const { date } = useBooking();
 
     useFocusEffect(
         useCallback(() => {
@@ -50,12 +52,7 @@ export default function ProfileScreen() {
     }
 
     return (
-        <ScrollView
-            style={styles.container}
-            contentContainerStyle={{
-                paddingBottom: 100,
-            }}
-        >
+        <ScreenContainer scroll safeArea={false} contentStyle={styles.content}>
             <View style={styles.header}>
                 <View style={styles.avatar}>
                     <Text style={styles.avatarText}>{avatarLetter}</Text>
@@ -65,46 +62,43 @@ export default function ProfileScreen() {
                 <Text style={styles.email}>{user?.email ?? "Nera el. pasto"}</Text>
             </View>
 
-            <View style={styles.card}>
-                <Text style={styles.sectionTitle}>Profilio informacija</Text>
+            <Card style={styles.card}>
+                <SectionTitle>Profilio informacija</SectionTitle>
 
-                <ProfileRow title="Vartotojo ID" value={user?.id ?? "-"} />
-                <ProfileRow title="El. pastas" value={user?.email ?? "-"} />
-                <ProfileRow
+                <InfoRow title="Vartotojo ID" value={user?.id ?? "-"} />
+                <InfoRow title="El. pastas" value={user?.email ?? "-"} />
+                <InfoRow
                     title="Sesijos galiojimas"
                     value={formatExpiresAt(session?.expires_at)}
                 />
-                <ProfileRow
+                <InfoRow
                     title="Registracijos data"
                     value={formatDate(user?.created_at)}
                 />
-            </View>
+            </Card>
 
-            <View style={styles.card}>
+            <Card style={styles.card}>
                 <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Mano rezervacijos</Text>
+                    <SectionTitle>Mano rezervacijos</SectionTitle>
 
-                    {loading ? (
-                        <ActivityIndicator color={Colors.accent} />
-                    ) : null}
+                    {loading ? <ActivityIndicator color={Colors.accent} /> : null}
                 </View>
 
                 {!loading && reservations.length === 0 ? (
-                    <Text style={styles.emptyText}>Rezervaciju dar nera.</Text>
+                    <EmptyState message="Rezervaciju dar nera." />
                 ) : null}
 
                 {reservations.map((reservation) => (
-                    <ReservationItem
+                    <ReservationCard
                         key={reservation.id}
                         reservation={reservation}
+                        formatDate={formatDate}
                     />
                 ))}
-            </View>
+            </Card>
 
-            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                <Text style={styles.logoutText}>Atsijungti</Text>
-            </TouchableOpacity>
-        </ScrollView>
+            <DangerButton title="Atsijungti" onPress={handleLogout} />
+        </ScreenContainer>
     );
 }
 
@@ -127,45 +121,14 @@ function formatDate(value?: string) {
     }).format(new Date(value));
 }
 
-function ProfileRow({
-    title,
-    value,
-}: {
-    title: string;
-    value: string;
-}) {
-    return (
-        <View style={styles.row}>
-            <Text style={styles.rowTitle}>{title}</Text>
-            <Text style={styles.rowValue}>{value}</Text>
-        </View>
-    );
-}
-
-function ReservationItem({ reservation }: { reservation: Booking }) {
-    return (
-        <View style={styles.reservationItem}>
-            <Text style={styles.reservationTitle}>
-                {reservation.service_title ?? reservation.service_id}
-            </Text>
-            <Text style={styles.reservationMeta}>
-                {formatDate(reservation.booking_date)}
-            </Text>
-            <Text style={styles.status}>{reservation.status}</Text>
-        </View>
-    );
-}
-
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.background,
+    content: {
         paddingTop: 70,
-        paddingHorizontal: 20,
+        paddingBottom: 100,
     },
     header: {
         alignItems: "center",
-        marginBottom: 30,
+        marginBottom: Spacing.xxxl,
     },
     avatar: {
         width: 90,
@@ -174,7 +137,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.accent,
         justifyContent: "center",
         alignItems: "center",
-        marginBottom: 15,
+        marginBottom: Spacing.md,
     },
     avatarText: {
         color: "white",
@@ -192,69 +155,13 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     card: {
-        backgroundColor: Colors.card,
-        borderRadius: 6,
-        padding: 18,
-        marginBottom: 20,
-    },
-    sectionTitle: {
-        color: Colors.text,
-        fontSize: 20,
-        fontWeight: "700",
-        marginBottom: 20,
+        marginBottom: Spacing.xl,
+        borderRadius: Radius.lg,
     },
     sectionHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 4,
-    },
-    row: {
-        marginBottom: 16,
-    },
-    rowTitle: {
-        color: Colors.secondary,
-        marginBottom: 4,
-    },
-    rowValue: {
-        color: Colors.text,
-        fontSize: 16,
-    },
-    emptyText: {
-        color: Colors.secondary,
-        fontSize: 15,
-    },
-    reservationItem: {
-        borderTopColor: "#2A2A2A",
-        borderTopWidth: 1,
-        paddingTop: 14,
-        marginTop: 14,
-    },
-    reservationTitle: {
-        color: Colors.text,
-        fontSize: 16,
-        fontWeight: "700",
-        marginBottom: 6,
-    },
-    reservationMeta: {
-        color: Colors.secondary,
-        marginBottom: 8,
-    },
-    status: {
-        alignSelf: "flex-start",
-        color: Colors.accent,
-        fontWeight: "700",
-        textTransform: "uppercase",
-    },
-    logoutButton: {
-        backgroundColor: Colors.accent,
-        padding: 18,
-        borderRadius: 6,
-        alignItems: "center",
-    },
-    logoutText: {
-        color: "white",
-        fontSize: 16,
-        fontWeight: "700",
+        marginBottom: Spacing.xs,
     },
 });

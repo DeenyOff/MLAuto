@@ -3,11 +3,12 @@ import {
     Image,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
 } from "react-native";
 
 import { Colors } from "@/constants/theme";
+import { PressableScale } from "@/components/ui/PressableScale";
+import { Radius, Spacing, Typography } from "@/components/ui/tokens";
 
 type Props = {
     id: string;
@@ -27,9 +28,8 @@ export default function ServiceCard({
     image,
 }: Props) {
     return (
-        <TouchableOpacity
+        <PressableScale
             style={styles.card}
-            activeOpacity={0.9}
             onPress={() =>
                 router.push({
                     pathname: "/service/[id]",
@@ -58,33 +58,35 @@ export default function ServiceCard({
                     </View>
                 </View>
             </View>
-        </TouchableOpacity>
+        </PressableScale>
     );
 }
 
 const styles = StyleSheet.create({
     card: {
         backgroundColor: Colors.card,
-        borderRadius: 6,
+        borderRadius: Radius.lg,
+        borderWidth: 1,
+        borderColor: "#262626",
         overflow: "hidden",
-        marginBottom: 20,
+        marginBottom: Spacing.xl,
     },
     image: {
         width: "100%",
         height: 190,
     },
     content: {
-        padding: 18,
+        padding: Spacing.lg,
     },
     title: {
         color: Colors.text,
         fontSize: 22,
         fontWeight: "700",
-        marginBottom: 8,
+        marginBottom: Spacing.sm,
     },
     carType: {
         color: Colors.secondary,
-        marginBottom: 18,
+        marginBottom: Spacing.lg,
     },
     bottomRow: {
         flexDirection: "row",
@@ -98,12 +100,13 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: Colors.accent,
-        paddingHorizontal: 18,
+        paddingHorizontal: Spacing.lg,
         paddingVertical: 10,
-        borderRadius: 6,
+        borderRadius: Radius.sm,
     },
     buttonText: {
         color: "white",
+        fontSize: Typography.meta,
         fontWeight: "600",
     },
 });

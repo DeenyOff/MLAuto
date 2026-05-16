@@ -3,15 +3,16 @@ import {
     Image,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
 } from "react-native";
 
-
+import { PrimaryButton } from "@/components/ui/Button";
+import { Spacing, uiStyles } from "@/components/ui/tokens";
 import { Colors } from "@/constants/theme";
 
 export default function ServiceDetails() {
-    const { id, title, price, carType, description, service_img_url} = useLocalSearchParams();
+    const { id, title, price, carType, description, service_img_url } =
+        useLocalSearchParams();
 
     function handleBookingPress() {
         router.push({
@@ -39,10 +40,7 @@ export default function ServiceDetails() {
             />
 
             <View style={styles.container}>
-                <Image
-                    source={{ uri: String(service_img_url) }}
-                    style={styles.image}
-                />
+                <Image source={{ uri: String(service_img_url) }} style={styles.image} />
 
                 <View style={styles.content}>
                     <Text style={styles.title}>{title}</Text>
@@ -50,13 +48,7 @@ export default function ServiceDetails() {
                     <Text style={styles.description}>{description}</Text>
                     <Text style={styles.price}>EUR {price}</Text>
 
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={handleBookingPress}
-                        activeOpacity={0.9}
-                    >
-                        <Text style={styles.buttonText}>Rezervuoti</Text>
-                    </TouchableOpacity>
+                    <PrimaryButton title="Rezervuoti" onPress={handleBookingPress} />
                 </View>
             </View>
         </>
@@ -73,40 +65,28 @@ const styles = StyleSheet.create({
         height: 300,
     },
     content: {
-        padding: 24,
+        padding: Spacing.xxl,
     },
     title: {
-        color: Colors.text,
+        ...uiStyles.screenTitle,
         fontSize: 30,
-        fontWeight: "700",
         marginBottom: 10,
     },
     carType: {
         color: Colors.secondary,
         fontSize: 16,
-        marginBottom: 20,
+        marginBottom: Spacing.xl,
     },
     description: {
         color: Colors.secondary,
         lineHeight: 24,
         fontSize: 16,
-        marginBottom: 30,
+        marginBottom: Spacing.xxxl,
     },
     price: {
         color: Colors.accent,
         fontSize: 34,
         fontWeight: "700",
-        marginBottom: 30,
-    },
-    button: {
-        backgroundColor: Colors.accent,
-        paddingVertical: 18,
-        borderRadius: 6,
-        alignItems: "center",
-    },
-    buttonText: {
-        color: "white",
-        fontSize: 18,
-        fontWeight: "700",
+        marginBottom: Spacing.xxxl,
     },
 });

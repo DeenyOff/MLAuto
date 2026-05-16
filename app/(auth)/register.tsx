@@ -1,33 +1,23 @@
 import { useState } from "react";
-import {
-    ActivityIndicator,
-    Alert,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { Alert, StyleSheet, Text } from "react-native";
 
 import { router } from "expo-router";
 
-import { Colors } from "@/constants/theme";
+import { AppInput } from "@/components/forms/AppInput";
+import { GhostButton, PrimaryButton } from "@/components/ui/Button";
+import { ScreenContainer } from "@/components/ui/ScreenContainer";
+import { Spacing, uiStyles } from "@/components/ui/tokens";
 import { supabase } from "@/services/supabase";
 
 export default function RegisterScreen() {
-
-
     // Data that will be transferred to Supabase
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [loading, setLoading] = useState(false);
-
     // End data
-
 
     async function handleRegister() {
         const normalizedEmail = email.trim();
@@ -37,29 +27,28 @@ export default function RegisterScreen() {
             return;
         }
 
-
         if (!firstName.trim()) {
-            Alert.alert("Klaida", "Įveskite vardą");
+            Alert.alert("Klaida", "Ä®veskite vardÄ…");
             return;
         }
 
         if (!lastName.trim()) {
-            Alert.alert("Klaida", "Įveskite pavardę");
+            Alert.alert("Klaida", "Ä®veskite pavardÄ™");
             return;
         }
 
         if (!phoneNumber.trim()) {
-            Alert.alert("Klaida", "Įveskite telefono numerį");
+            Alert.alert("Klaida", "Ä®veskite telefono numerÄ¯");
             return;
         }
 
         if (!email.trim()) {
-            Alert.alert("Klaida", "Įveskite el. paštą");
+            Alert.alert("Klaida", "Ä®veskite el. paÅ¡tÄ…");
             return;
         }
 
         if (password.length < 6) {
-            Alert.alert("Klaida", "Slaptažodis per trumpas");
+            Alert.alert("Klaida", "SlaptaÅ¾odis per trumpas");
             return;
         }
 
@@ -70,16 +59,15 @@ export default function RegisterScreen() {
             password,
             options: {
                 data: {
-                    // Дублировано для более простого использования в SQL, переменные записаны в camelCase а в базе будет snake_case
+                    // Ð”ÑƒÐ±Ð»Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¾ Ð´Ð»Ñ Ð±Ð¾Ð»ÐµÐµ Ð¿Ñ€Ð¾ÑÑ‚Ð¾Ð³Ð¾ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ð½Ð¸Ñ Ð² SQL, Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ðµ Ð·Ð°Ð¿Ð¸ÑÐ°Ð½Ñ‹ Ð² camelCase Ð° Ð² Ð±Ð°Ð·Ðµ Ð±ÑƒÐ´ÐµÑ‚ snake_case
                     first_name: firstName,
                     last_name: lastName,
                     full_name: firstName + " " + lastName,
-                    phone_number: phoneNumber
+                    phone_number: phoneNumber,
                     // phone: phoneNumber
-                }
-            }
+                },
+            },
         });
-
 
         if (error) {
             Alert.alert("Klaida", error.message);
@@ -99,117 +87,76 @@ export default function RegisterScreen() {
     }
 
     return (
-        <View style={styles.container}>
+        <ScreenContainer safeArea={false} centered contentStyle={styles.container}>
             <Text style={styles.title}>Registracija</Text>
 
-            <TextInput
+            <AppInput
                 placeholder="Vardas"
-                placeholderTextColor="#777"
                 autoCapitalize="none"
                 autoComplete="name"
                 value={firstName}
                 onChangeText={setFirstName}
-                style={styles.input}
+                inputStyle={styles.input}
             />
 
-            <TextInput
-                placeholder="Pavardė"
-                placeholderTextColor="#777"
+            <AppInput
+                placeholder="PavardÄ—"
                 autoCapitalize="none"
                 autoComplete="name"
                 value={lastName}
                 onChangeText={setLastName}
-                style={styles.input}
+                inputStyle={styles.input}
             />
 
-            <TextInput
+            <AppInput
                 placeholder="Tel. numeris"
-                placeholderTextColor="#777"
                 autoComplete="tel"
                 keyboardType="numeric"
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
-                style={styles.input}
+                inputStyle={styles.input}
             />
 
-            <TextInput
+            <AppInput
                 placeholder="El. pastas"
-                placeholderTextColor="#777"
                 autoCapitalize="none"
                 autoComplete="email"
                 keyboardType="email-address"
                 value={email}
                 onChangeText={setEmail}
-                style={styles.input}
+                inputStyle={styles.input}
             />
 
-            <TextInput
+            <AppInput
                 placeholder="Slaptazodis"
-                placeholderTextColor="#777"
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
-                style={styles.input}
+                inputStyle={styles.input}
             />
 
-            <TouchableOpacity
+            <PrimaryButton
+                title="Registruotis"
                 disabled={loading}
-                style={[styles.button, loading && styles.disabledButton]}
+                loading={loading}
                 onPress={handleRegister}
-            >
-                {loading ? (
-                    <ActivityIndicator color="white" />
-                ) : (
-                    <Text style={styles.buttonText}>Registruotis</Text>
-                )}
-            </TouchableOpacity>
+            />
 
-            <TouchableOpacity onPress={() => router.push("/login")}>
-                <Text style={styles.link}>Jau turiu paskyra</Text>
-            </TouchableOpacity>
-        </View>
+            <GhostButton title="Jau turiu paskyra" onPress={() => router.push("/login")} />
+        </ScreenContainer>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: Colors.background,
-        justifyContent: "center",
         paddingHorizontal: 24,
     },
     title: {
-        color: Colors.text,
+        ...uiStyles.screenTitle,
         fontSize: 34,
-        fontWeight: "700",
         marginBottom: 40,
     },
     input: {
-        backgroundColor: Colors.card,
-        color: Colors.text,
-        padding: 18,
-        borderRadius: 12,
-        marginBottom: 18,
-        fontSize: 16,
-    },
-    button: {
-        backgroundColor: Colors.accent,
-        padding: 18,
-        borderRadius: 12,
-        alignItems: "center",
-    },
-    disabledButton: {
-        opacity: 0.7,
-    },
-    buttonText: {
-        color: "white",
-        fontSize: 16,
-        fontWeight: "700",
-    },
-    link: {
-        color: Colors.accent,
-        textAlign: "center",
-        marginTop: 24,
-        fontSize: 16,
+        marginBottom: Spacing.lg,
     },
 });

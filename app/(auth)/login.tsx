@@ -1,17 +1,12 @@
 import { useState } from "react";
-import {
-    ActivityIndicator,
-    Alert,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { Alert, StyleSheet, Text } from "react-native";
 
 import { router } from "expo-router";
 
-import { Colors } from "@/constants/theme";
+import { AppInput } from "@/components/forms/AppInput";
+import { GhostButton, PrimaryButton } from "@/components/ui/Button";
+import { ScreenContainer } from "@/components/ui/ScreenContainer";
+import { Spacing, uiStyles } from "@/components/ui/tokens";
 import { supabase } from "@/services/supabase";
 
 export default function LoginScreen() {
@@ -45,88 +40,53 @@ export default function LoginScreen() {
     }
 
     return (
-        <View style={styles.container}>
+        <ScreenContainer safeArea={false} centered contentStyle={styles.container}>
             <Text style={styles.title}>Prisijungimas</Text>
 
-            <TextInput
+            <AppInput
                 placeholder="El. pastas"
-                placeholderTextColor="#777"
                 autoCapitalize="none"
                 autoComplete="email"
                 keyboardType="email-address"
                 value={email}
                 onChangeText={setEmail}
-                style={styles.input}
+                inputStyle={styles.input}
             />
 
-            <TextInput
+            <AppInput
                 placeholder="Slaptazodis"
-                placeholderTextColor="#777"
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
-                style={styles.input}
+                inputStyle={styles.input}
             />
 
-            <TouchableOpacity
+            <PrimaryButton
+                title="Prisijungti"
                 disabled={loading}
-                style={[styles.button, loading && styles.disabledButton]}
+                loading={loading}
                 onPress={handleLogin}
-            >
-                {loading ? (
-                    <ActivityIndicator color="white" />
-                ) : (
-                    <Text style={styles.buttonText}>Prisijungti</Text>
-                )}
-            </TouchableOpacity>
+                style={styles.button}
+            />
 
-            <TouchableOpacity onPress={() => router.push("/register")}>
-                <Text style={styles.link}>Sukurti paskyra</Text>
-            </TouchableOpacity>
-        </View>
+            <GhostButton title="Sukurti paskyra" onPress={() => router.push("/register")} />
+        </ScreenContainer>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: Colors.background,
-        justifyContent: "center",
         paddingHorizontal: 24,
     },
     title: {
-        color: Colors.text,
+        ...uiStyles.screenTitle,
         fontSize: 34,
-        fontWeight: "700",
         marginBottom: 40,
     },
     input: {
-        backgroundColor: Colors.card,
-        color: Colors.text,
-        padding: 18,
-        borderRadius: 12,
-        marginBottom: 18,
-        fontSize: 16,
+        marginBottom: Spacing.lg,
     },
     button: {
-        backgroundColor: Colors.accent,
-        padding: 18,
-        borderRadius: 12,
-        alignItems: "center",
         marginTop: 10,
-    },
-    disabledButton: {
-        opacity: 0.7,
-    },
-    buttonText: {
-        color: "white",
-        fontSize: 16,
-        fontWeight: "700",
-    },
-    link: {
-        color: Colors.accent,
-        textAlign: "center",
-        marginTop: 24,
-        fontSize: 16,
     },
 });

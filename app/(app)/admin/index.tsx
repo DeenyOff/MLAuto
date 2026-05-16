@@ -1,21 +1,24 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useCallback } from "react";
+import { router, Stack, useFocusEffect } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
+import { AdminActionCard } from "@/components/admin/AdminActionCard";
+import { BookingCard } from "@/components/cards/BookingCard";
+import { StatsCard } from "@/components/cards/StatsCard";
+import { ScreenContainer } from "@/components/ui/ScreenContainer";
+import { SectionTitle } from "@/components/ui/SectionTitle";
+import { Spacing, uiStyles } from "@/components/ui/tokens";
 import { Colors } from "@/constants/theme";
-
 import { useAdmin } from "@/hooks/use-admin";
-import {useCallback, useEffect} from "react";
-import {router, Stack, useFocusEffect } from "expo-router";
 
 export default function AdminScreen() {
-
     const {
         bookingsCount,
         fetchBookingsCount,
         bookings,
         fetchBookings,
         users,
-        fetchUsers
+        fetchUsers,
     } = useAdmin();
 
     useFocusEffect(
@@ -23,9 +26,8 @@ export default function AdminScreen() {
             fetchBookingsCount();
             fetchBookings();
             fetchUsers();
-        }, [])
+        }, [fetchBookings, fetchBookingsCount, fetchUsers])
     );
-
 
     return (
         <>
@@ -40,226 +42,59 @@ export default function AdminScreen() {
                     headerTintColor: Colors.text,
                 }}
             />
-            <SafeAreaView style={styles.safeArea}>
-                <ScrollView
-                    style={styles.container}
-                    contentContainerStyle={styles.content}
-                    showsVerticalScrollIndicator={false}
-                >
-                    <Text style={styles.title}>Admin Panelė</Text>
-                    <Text style={styles.subtitle}>
-                        Valdykite rezervacijas ir vartotojus
-                    </Text>
+            <ScreenContainer scroll>
+                <Text style={styles.title}>Admin Panel</Text>
+                <Text style={styles.subtitle}>
+                    Valdykite rezervacijas ir vartotojus
+                </Text>
 
-                    <View style={styles.statsContainer}>
+                <View style={styles.statsContainer}>
+                    <StatsCard value={bookingsCount} label="Rezervacijos" />
+                    <StatsCard value={users.length} label="Vartotojų" />
+                </View>
 
-                        <View style={styles.statCard}>
-                            <Text style={styles.statNumber}>{bookingsCount}</Text>
-                            <Text style={styles.statLabel}>Rezervacijos</Text>
-                        </View>
+                <View style={styles.section}>
+                    <SectionTitle>Greiti veiksmai</SectionTitle>
+                    <AdminActionCard
+                        title="Vartotojų sąrašas"
+                        onPress={() => router.push("/admin/userListPage")}
+                    />
+                </View>
 
-                        <View style={styles.statCard}>
-                            <Text style={styles.statNumber}>{users.length}</Text>
-                            <Text style={styles.statLabel}>Vartotojų</Text>
-                        </View>
-                    </View>
+                <View style={styles.section}>
+                    <SectionTitle>Rezervacijų sąrašas</SectionTitle>
 
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Greiti veiksmai</Text>
-
-                        <TouchableOpacity style={styles.actionButton} onPress={() => router.push("/admin/userListPage")}>
-                            <Text style={styles.actionButtonText}>
-                                Vartotojų sąrašas
-                            </Text>
-                        </TouchableOpacity>
-
-                    </View>
-
-
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>
-                            Rezervacijų sąrašas
-                        </Text>
-
-                        {bookings?.map(booking => (
-                            <BookingCard
-                                key={booking.id}
-                                id={booking.id}
-                                title={booking.service_title ?? "Paslauga"}
-                                bookingDate={booking.booking_date}
-                                status={booking.status}
-                            />
-                        ))}
-
-                    </View>
-                </ScrollView>
-            </SafeAreaView>
+                    {bookings?.map((booking) => (
+                        <BookingCard
+                            key={booking.id}
+                            title={booking.service_title ?? "Paslauga"}
+                            bookingDate={booking.booking_date}
+                            status={booking.status}
+                            onPress={() => router.push(`/admin/booking/${booking.id}`)}
+                        />
+                    ))}
+                </View>
+            </ScreenContainer>
         </>
     );
 }
 
-
-type BookingCardProps = {
-    id: string;
-    title: string;
-    bookingDate: string;
-    status: string;
-};
-
-export function BookingCard({
-                                id,
-                                title,
-                                bookingDate,
-                                status,
-                            }: BookingCardProps) {
-    return (
-        <TouchableOpacity
-            style={styles.bookingCard}
-            activeOpacity={0.9}
-            onPress={() =>
-                router.push(`/admin/booking/${id}`)
-            }
-        >
-            <View>
-                <Text style={styles.bookingTitle}>
-                    {title}
-                </Text>
-
-                <Text style={styles.bookingInfo}>
-                    {bookingDate}
-                </Text>
-            </View>
-
-            <View style={styles.statusBadge}>
-                <Text style={styles.statusText}>
-                    {status.toUpperCase()}
-                </Text>
-            </View>
-        </TouchableOpacity>
-    );
-}
-
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: Colors.background,
-    },
-
-    container: {
-        flex: 1,
-        backgroundColor: Colors.background,
-    },
-
-    content: {
-        padding: 20,
-        paddingBottom: 40,
-    },
-
     title: {
-        color: Colors.text,
+        ...uiStyles.screenTitle,
         fontSize: 34,
-        fontWeight: "700",
-        marginBottom: 6,
+        marginBottom: Spacing.sm,
     },
-
     subtitle: {
-        color: Colors.secondary,
-        fontSize: 16,
-        marginBottom: 30,
+        ...uiStyles.subtitle,
+        marginBottom: Spacing.xxxl,
     },
-
     statsContainer: {
         flexDirection: "row",
-        gap: 14,
-        marginBottom: 30,
+        gap: Spacing.md,
+        marginBottom: Spacing.xxxl,
     },
-
-    statCard: {
-        flex: 1,
-        backgroundColor: Colors.card,
-        borderRadius: 20,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: "#262626",
-    },
-
-    statNumber: {
-        color: Colors.accent,
-        fontSize: 32,
-        fontWeight: "700",
-        marginBottom: 8,
-    },
-
-    statLabel: {
-        color: Colors.secondary,
-        fontSize: 14,
-    },
-
     section: {
-        marginBottom: 30,
-    },
-
-    sectionTitle: {
-        color: Colors.text,
-        fontSize: 22,
-        fontWeight: "700",
-        marginBottom: 16,
-    },
-
-    actionButton: {
-        backgroundColor: Colors.card,
-        borderRadius: 18,
-        paddingVertical: 18,
-        paddingHorizontal: 18,
-        marginBottom: 14,
-        borderWidth: 1,
-        borderColor: "#262626",
-    },
-
-    actionButtonText: {
-        color: Colors.text,
-        fontSize: 16,
-        fontWeight: "600",
-    },
-
-    bookingCard: {
-        backgroundColor: Colors.card,
-        borderRadius: 18,
-        padding: 18,
-        marginBottom: 14,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: "#262626",
-    },
-
-    bookingTitle: {
-        color: Colors.text,
-        fontSize: 16,
-        fontWeight: "700",
-        marginBottom: 6,
-    },
-
-    bookingInfo: {
-        color: Colors.secondary,
-        fontSize: 14,
-    },
-
-    statusBadge: {
-        backgroundColor: "rgba(0,255,120,0.15)",
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 999,
-    },
-
-    pendingBadge: {
-        backgroundColor: "rgba(255,180,0,0.15)",
-    },
-
-    statusText: {
-        color: Colors.text,
-        fontSize: 12,
-        fontWeight: "700",
+        marginBottom: Spacing.xxxl,
     },
 });
