@@ -162,7 +162,7 @@ export default function BookingDetailsScreen() {
                     />
 
                     <DangerButton
-                        title="IÅ¡trinti rezervacija"
+                        title="Ištrinti rezervacija"
                         onPress={async () => {
                             await removeBooking(booking.id);
                             router.back();
